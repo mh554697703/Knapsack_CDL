@@ -1,0 +1,11 @@
+<RCC>
+    <qresource prefix="/">
+        <file>images/Start.png</file>
+        <file>images/Gear.png</file>
+        <file>images/Question.png</file>
+        <file>images/Link.png</file>
+        <file>images/Cancel.png</file>
+        <file>images/Stop.png</file>
+        <file>images/Standby.png</file>
+    </qresource>
+</RCC>
