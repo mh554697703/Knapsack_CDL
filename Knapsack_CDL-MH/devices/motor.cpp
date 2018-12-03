@@ -9,8 +9,8 @@ motor::motor(QObject *parent) : QObject(parent)
     moveTime = new QTime();
     checkMoveTimer = new QTimer(this);
     connect(&motorThread,SIGNAL(response(QByteArray)),this,SLOT(receive_response(QByteArray)));
-    connect(&motorThread,SIGNAL(PortNotOpen()),this,SLOT(motorError()));
-    connect(&motorThread,SIGNAL(timeout()),this,SLOT(timeout()));
+    connect(&motorThread,SIGNAL(PortNotOpen(QString)),this,SLOT(PortError(QString)));
+    connect(&motorThread,SIGNAL(timeout(QString)),this,SLOT(PortError(QString)));
     connect(checkMoveTimer,SIGNAL(timeout()),this,SLOT(checkMove()));
 
     moveNorth = false;
@@ -102,11 +102,6 @@ void motor::checkMotorAngle(const double &s)
         }
 
     }
-}
-
-void motor::timeout()
-{
-    qDebug()<<"motor timeout";
 }
 
 void motor::motorQuit()
@@ -217,4 +212,11 @@ void motor::receive_response(const QByteArray &responseInfo)
 
         motorThread.transaction(Order_str.toLatin1());
     }
+}
+
+void motor::PortError(const QString &s)
+{
+    QString errorCode = QString::fromLocal8Bit("µç»ú");
+    errorCode.append(s);
+    emit motorError(errorCode);
 }

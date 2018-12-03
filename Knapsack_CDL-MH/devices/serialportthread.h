@@ -19,8 +19,8 @@ public:
         void run() Q_DECL_OVERRIDE;
     signals:
         void response(const QByteArray &s);
-        void PortNotOpen(const QString s);
-        void timeout();
+        void PortNotOpen(const QString &s);
+        void timeout(const QString &s);
 
     private:
         QString portName;

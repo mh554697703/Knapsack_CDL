@@ -5,9 +5,6 @@
 
 DevicesControl::DevicesControl(QObject *parent) : QObject(parent)
 {
-    CM_Time = new QTime();
-    CS_Time = new QTime();
-    workTime = new QTime();
     Motor = new motor();
     connect(&Compass, &compass::compassAngle, this, &DevicesControl::pulse_laser_opened_fcn);
     connect(&Compass, &compass::compassAngle, Motor,&motor::prepare);
@@ -45,7 +42,6 @@ void DevicesControl::startAction(SOFTWARESETTINGS settings)
     motorInPosition = false;
     LaserReady = false;
     Compass.read();
-    CM_Time->start();
     LaserSeed.beginSeedLaser(mysetting.laserLocalPower,mysetting.laserPulseEnergy);
     Motor->set_Motor_azAngleStep(mysetting.azAngleStep);
 }
@@ -91,11 +87,6 @@ void DevicesControl::checkMotor()             //师兄之前定义的函数，名字看起来是
     }
 }
 
-//void DevicesControl::motorErrorSolve()
-//{
-//    qDebug()<<"motor already stop";
-//}
-
 void DevicesControl::readyToMove()
 {
     qDebug() <<"motor prepare ok";
@@ -105,8 +96,6 @@ void DevicesControl::SetMotorFlag(const double &s)
 {
     currentMotorAngle = s;
     motorInPosition = true;
-    int moveUseTime = CM_Time->restart();
-    qDebug() <<"motorTime = "<<moveUseTime;
     qDebug() <<"motor move ok";
 }
 
@@ -118,7 +107,6 @@ void DevicesControl::laserReady()
 }
 // 罗盘读好了，电机转到位了，激光器也都打开了
 // 在这里，完成所有的准备工作
-
 void DevicesControl::motorCloseOk()
 {
     MotorCloseOk = true;
@@ -205,13 +193,8 @@ void DevicesControl::beginWork()
                 }
                if(!Stop_now)
                {
-                   int workUseTime = workTime->restart();
-                   qDebug()<<"workUseTime = "<<workUseTime;
                    qDebug() << "capture start!!!";
-                   CM_Time->restart();
                 bool status = adq.Start_Capture();                 //开始采集
-                int CaptureUseTime = CM_Time->restart();
-                 qDebug() << "CaptureUseTime = " <<CaptureUseTime;
                  if(status == false)
                  {
                  qDebug() << "ADQ failed";
@@ -221,11 +204,9 @@ void DevicesControl::beginWork()
                  LaserReady = false;
                  motorInPosition = false;
                  LaserPulse.checkLaser();                           //检查激光器
-                 CM_Time->restart();
                  Motor->moveRelative(-mysetting.azAngleStep);        //电机转至下一个方向
 
             //以下为风速计算和存储
-                 CS_Time->start();
                  LOSVelocityCal(nRB_ovlp+2, nFFT_half,
                                 20, mysetting.laserWaveLength,
                                 freqAxis, adq.get_PSD_double());     //径向风速计算
@@ -297,8 +278,6 @@ void DevicesControl::beginWork()
                          hAngle = dswf.getHAngle();
                          vVelocity = dswf.getVVelocity();
                      }
-                     int calculateUseTime = CS_Time->restart();
-                     qDebug()<<"calculateUseTime = "<<calculateUseTime;
                      SaveVelo_AddData();     // 存储矢量风速到文件
                      //更新显示
                      emit hVelocityReady(hVelocity,nRB_ovlp);
@@ -307,8 +286,6 @@ void DevicesControl::beginWork()
                  }
 
                  SaveSpec_AddData();         //存储功率谱到文件
-                 int saveUseTime = CS_Time->restart();
-                 qDebug()<<"saveUseTime = "<<saveUseTime;
 
                  capture_counter++;
                  qDebug() << "capture_counter = " << capture_counter;

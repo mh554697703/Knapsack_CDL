@@ -29,7 +29,7 @@ signals:
 public slots:
     void prepare(const double &a);
 private slots:
-    void timeout();
+    void PortError(const QString &s);
     void receive_response(const QByteArray &responseInfo);
     void checkMove();
 private:

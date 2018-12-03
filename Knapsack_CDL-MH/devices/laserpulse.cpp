@@ -5,8 +5,8 @@
 laserPulse::laserPulse(QObject *parent) : QObject(parent)
 {
     connect(&laserpulseThread,SIGNAL(response(QByteArray)),this,SLOT(receive_response(QByteArray)));
-    connect(&laserpulseThread,SIGNAL(PortNotOpen()),this,SLOT(portError()));
-    connect(&laserpulseThread,SIGNAL(timeout()),this,SLOT(timeout()));
+    connect(&laserpulseThread,SIGNAL(PortNotOpen(QString)),this,SLOT(portError(QString)));
+    connect(&laserpulseThread,SIGNAL(timeout(QString)),this,SLOT(portError(QString)));
 
     powerSet = true;
     fire = false;
@@ -144,14 +144,9 @@ void laserPulse::checkLaser()
     laserpulseThread.transaction(senddata);
 }
 
-void laserPulse::portError()
+void laserPulse::portError(const QString &s)
 {
-    errorCode = QString::fromLocal8Bit("脉冲激光器串口打开异常");
-    emit this->laserPulseError(errorCode);
-}
-
-void laserPulse::timeout()
-{
-    errorCode = QString::fromLocal8Bit("脉冲激光器串口数据读取异常");
-    emit this->laserPulseError(errorCode);
+    QString errorCode = QString::fromLocal8Bit("脉冲放大器");
+    errorCode.append(s);
+    emit laserPulseError(errorCode);
 }

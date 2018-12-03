@@ -8,6 +8,7 @@ ParameterSetDialog::ParameterSetDialog(QWidget *parent) :
 {
     ui->setupUi(this);
     paraSettingFile = new SettingFile();
+//    this->setParent(parent);
 }
 
 ParameterSetDialog::~ParameterSetDialog()

@@ -30,7 +30,7 @@ private slots:
     void capturetimeout();
 signals:
     void collectFinish();
-    void adqError();
+    void adqError(const QString &s);
 private:
     bool isADQ214Connected;
     void *adq_cu;

@@ -21,8 +21,7 @@ signals:
     void compassAngle(const double &s);
     void compassError(const QString &s);
 public slots:
-    void portError();
-    void TimeOutError();
+    void portError(const QString &s);
 private:
     QByteArray senddata;                                   //需要发送的字节数组
     double toangle(const QString &c);                     //将接收的数据转为角度信息

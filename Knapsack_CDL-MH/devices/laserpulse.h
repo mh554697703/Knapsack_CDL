@@ -23,9 +23,7 @@ public slots:
 
 private slots:
     void receive_response(const QByteArray &s);
-    void portError();
-    void timeout();
-
+    void portError(const QString &s);
 
 signals:
 //    void powerReady();

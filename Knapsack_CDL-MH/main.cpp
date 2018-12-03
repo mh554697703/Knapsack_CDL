@@ -11,11 +11,12 @@ int main(int argc, char *argv[])
     QFont font = w.font();
     font.setPointSize(16);
     w.setFont(font);
+    w.setMinimumSize(1262,745);
     w.show();
 
 //    w.showMaximized();
 //    w.showFullScreen();
-    w.setMinimumSize(1262,745);
+
     return a.exec();
 
 }

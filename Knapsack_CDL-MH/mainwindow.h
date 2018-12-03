@@ -77,11 +77,11 @@ private slots:
 
     void checkDataFilePath();
 
-    void MotorError(const QString s);
+    void MotorError(const QString &s);
     void CompassError(const QString &s);
     void LaserseedError(const QString &s);
     void LaserpulseError(const QString &s);
-    void AdqError();
+    void AdqError(const QString &s);
     void on_CompassButton_clicked();
 
 private:

@@ -32,21 +32,16 @@ MainWindow::MainWindow(QWidget *parent) :
     checkDataFilePath();
 
     createDockWindow();                                   //创建各显示窗口
-    createStatusBar();                                     //创建状态栏
+    createStatusBar();                                    //创建状态栏
     createActions();                                      //创建动作
     createMenus();                                        //创建菜单栏
     createToolBars();                                     //创建工具栏
 
-    connect(stopAction, &QAction::triggered, this, &MainWindow::stopActionTriggered);
-    connect(startAction, &QAction::triggered, this, &MainWindow::startActionTriggered);
-    connect(quitAction, &QAction::triggered, this, &MainWindow::quitActionTriggered);
-    connect(setAction,&QAction::triggered,this, &MainWindow::setActionTriggered);
-
+    //显示部分
     connect(hVelocityAngleAction,SIGNAL(triggered(bool)),this,SLOT(hVelocityAngleActionTriggered(bool)));
     connect(vVelocityAngleAction,SIGNAL(triggered(bool)),this,SLOT(vVelocityAngleActionTriggered(bool)));
     connect(hDataAction,&QAction::triggered,this,&MainWindow::hDataActionTriggered);
 
-    //显示部分
     UpdateHeightsValue();
     stGraph_HSpeed->initialShow(14, minDetectRange, rangeResol);
     devicesControl = new DevicesControl();
@@ -61,6 +56,11 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(devicesControl, &DevicesControl::motorError, this,&MainWindow::MotorError);
 
     // 控制部分
+    connect(stopAction, &QAction::triggered, this, &MainWindow::stopActionTriggered);
+    connect(startAction, &QAction::triggered, this, &MainWindow::startActionTriggered);
+    connect(quitAction, &QAction::triggered, this, &MainWindow::quitActionTriggered);
+    connect(setAction,&QAction::triggered,this, &MainWindow::setActionTriggered);
+
     workThread = new QThread;
     devicesControl->moveToThread(workThread);
     connect(workThread, &QThread::finished, devicesControl, &QObject::deleteLater);
@@ -77,6 +77,7 @@ MainWindow::MainWindow(QWidget *parent) :
     TestTimer = new QTimer(this);
     connect(TestTimer, SIGNAL(timeout()), this, SLOT(changeData()));
 //    TestTimer->start(1000);
+    connect(compassbutton,&QPushButton::clicked ,this,&MainWindow::on_CompassButton_clicked);
 }
 
 MainWindow::~MainWindow()
@@ -109,11 +110,19 @@ void MainWindow::quitActionTriggered()
 }
 
 void MainWindow::startActionTriggered()
-{
-    TestTimer->start(1000);
+{  
     if (!isWorking) {
+        compassbutton->setStyleSheet("background-color:rgb(0,255,100);");
+        seedbutton->setStyleSheet("background-color:rgb(0,255,100);");
+        pulsebutton->setStyleSheet("background-color:rgb(0,255,100);");
+        motorbutton->setStyleSheet("background-color:rgb(0,255,100);");
+        adqbutton->setStyleSheet("background-color:rgb(0,255,100);");
         isWorking = true;
+        TestTimer->start(1000);
         devicesControl->startAction(mysetting);
+    }
+    else {
+        stopActionTriggered();
     }
 }
 
@@ -263,52 +272,52 @@ void MainWindow::createStatusBar()              //状态栏
 
     compassbutton = new QPushButton();
     compassbutton->setObjectName("CompassButton");
-    compassbutton->setStyleSheet("background-color:rgb(0,255,100);");
+//    compassbutton->setStyleSheet("background-color:rgb(0,255,100);");
     compassbutton->setText(QString::fromLocal8Bit("罗盘"));
     compassbutton->setFont(myfont);
     compassbutton->setFixedSize(70,30);
     hlayout->addWidget(compassbutton);
 
     adqbutton = new QPushButton(this);
-    adqbutton->setStyleSheet("background-color:rgb(0,255,100);");
+//    adqbutton->setStyleSheet("background-color:rgb(0,255,100);");
     adqbutton->setText(QString::fromLocal8Bit("采集卡"));
     adqbutton->setFont(myfont);
     adqbutton->setFixedSize(70,30);
     hlayout->addWidget(adqbutton);
 
     motorbutton = new QPushButton(this);
-    motorbutton->setStyleSheet("background-color:rgb(0,255,100);");
+//    motorbutton->setStyleSheet("background-color:rgb(0,255,100);");
     motorbutton->setText(QString::fromLocal8Bit("电机"));
     motorbutton->setFont(myfont);
     motorbutton->setFixedSize(70,30);
     hlayout->addWidget(motorbutton);
 
     seedbutton = new QPushButton(this);
-    seedbutton->setStyleSheet("background-color:rgb(0,255,100);");
+//    seedbutton->setStyleSheet("background-color:rgb(0,255,100);");
     seedbutton->setText(QString::fromLocal8Bit("种子源"));
     seedbutton->setFont(myfont);
     seedbutton->setFixedSize(70,30);
     hlayout->addWidget(seedbutton);
 
     pulsebutton = new QPushButton(this);
-    pulsebutton->setStyleSheet("background-color:rgb(0,255,100);");
+//    pulsebutton->setStyleSheet("background-color:rgb(0,255,100);");
     pulsebutton->setText(QString::fromLocal8Bit("放大器"));
     pulsebutton->setFont(myfont);
     pulsebutton->setFixedSize(70,30);
     hlayout->addWidget(pulsebutton);
     hlayout->setSpacing(20);
 
-    QWidget *myWidget = new QWidget;
-    myWidget->setLayout(hlayout);
+    QWidget *StatusWidget = new QWidget;
+    StatusWidget->setLayout(hlayout);
 
     statusBarText = new QLabel(QString::fromLocal8Bit(" 未进行探测"));
     statusBarText->setFont(myfont);
     statusBarText->setStyleSheet("background-color:rgb(0,255,100);");
-    statusBarText->setFixedSize(300,30);
+    statusBarText->setFixedSize(350,30);
 
     ui->statusBar->setFixedHeight(45);
-    ui->statusBar->addWidget(myWidget);
-    ui->statusBar->setStyleSheet(QString("QStatusBar::item{border: 0px}"));
+    ui->statusBar->addWidget(StatusWidget);
+    ui->statusBar->setStyleSheet(QString("QStatusBar::item{border: 0px}"));    //隐藏状态栏边框
     QLabel *label2 = new QLabel;
     label2->setFont(myfont);
     label2->setFixedHeight(30);
@@ -317,7 +326,7 @@ void MainWindow::createStatusBar()              //状态栏
     ui->statusBar->addPermanentWidget(label2);
     ui->statusBar->addPermanentWidget(statusBarText);
 
-    connect(compassbutton,SIGNAL(clicked()),this,SLOT(on_CompassButton_clicked()));
+
 }
 
 void MainWindow::createDockWindow()           //各个显示窗口
@@ -367,7 +376,7 @@ void MainWindow::createDockWindow()           //各个显示窗口
 
     //垂直风速窗口
     dock3 = new QDockWidget(tr("DockWindow 3"),this);
-    dock3->setWindowTitle(QString::fromLocal8Bit("垂直风速"));
+    dock3->setWindowTitle(QString::fromLocal8Bit("垂直风速/风向"));
     dock3->setFeatures(QDockWidget::NoDockWidgetFeatures);
     dock3->setAllowedAreas(Qt::TopDockWidgetArea|Qt::RightDockWidgetArea);
     dock3->setWidget(vSpeedChartView);
@@ -397,7 +406,7 @@ void MainWindow::createToolBars()           //工具栏
     connect(toolbar->quitAction, &QAction::triggered, this, &MainWindow::quitActionTriggered);
     connect(toolbar->setAction,&QAction::triggered,this, &MainWindow::setActionTriggered);
     connect(toolbar->startAction,&QAction::triggered,this, &MainWindow::startActionTriggered);
-    connect(toolbar->stopAction,&QAction::triggered,this, &MainWindow::stopActionTriggered);
+//    connect(toolbar->stopAction,&QAction::triggered,this, &MainWindow::stopActionTriggered);
     toolbar->setVisible(true);
 }
 void MainWindow::createActions()          //菜单栏动作
@@ -408,7 +417,7 @@ void MainWindow::createActions()          //菜单栏动作
     quitAction = new QAction(QString::fromLocal8Bit("退出"));
     hVelocityAngleAction = new QAction(QString::fromLocal8Bit("水平风速/风向"));
     vVelocityAngleAction = new QAction(QString::fromLocal8Bit("垂直风速/风向"));
-    hDataAction = new QAction(QString::fromLocal8Bit("历史数据"));
+    hDataAction = new QAction(QString::fromLocal8Bit("水平风速时空分布"));
 
     myfont.setPointSize(12);
     myfont.setBold(false);
@@ -443,7 +452,7 @@ void MainWindow::hDataActionTriggered(const bool a)
     dock1->setVisible(a);
 }
 
-void MainWindow::MotorError(const QString s)
+void MainWindow::MotorError(const QString &s)
 {
     motorbutton->setStyleSheet("background-color:rgb(255,0,100);");
     statusBarText->setText(s);
@@ -467,13 +476,14 @@ void MainWindow::LaserpulseError(const QString &s)
     statusBarText->setText(s);
 }
 
-void MainWindow::AdqError()
+void MainWindow::AdqError(const QString &s)
 {
     adqbutton->setStyleSheet("background-color:rgb(255,0,100);");
+    qDebug()<<"adqError = "<<s;
+    statusBarText->setText(s);
 }
 
-
-void MainWindow::on_CompassButton_clicked()
+void MainWindow::on_CompassButton_clicked()            //测试用
 {
     qDebug()<<"window width ="<<this->width();
     qDebug()<<"window heigh ="<<this->height();

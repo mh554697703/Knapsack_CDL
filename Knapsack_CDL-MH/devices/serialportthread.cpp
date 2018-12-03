@@ -61,10 +61,9 @@ void serialportThread::run()
         {
             serial.close();
             serial.setPortName(currentPortName);
-            if (!serial.open(QIODevice::ReadWrite))
+            if(!serial.open(QIODevice::ReadWrite))
             {
                 emit PortNotOpen(QString::fromLocal8Bit("串口连接异常！"));
-
                 return;
             }
             switch (baud)
@@ -89,10 +88,8 @@ void serialportThread::run()
             serial.setStopBits(QSerialPort::OneStop);			//停止位
             serial.setFlowControl(QSerialPort::NoFlowControl);	//流控制
         }
-
         QByteArray requestData = currentRequest;
         serial.write(requestData);
-
 
         if (serial.waitForBytesWritten(waitTimeout))                        //有字节写入时就开启，时间终止后跳出
         {
@@ -108,14 +105,14 @@ void serialportThread::run()
             }
             else
             {
-                emit this->timeout();
+                emit this->timeout(QString::fromLocal8Bit("串口数据读取超时"));
                return;
             }
 
         }
         else
         {
-            emit this->timeout();
+            emit this->timeout(QString::fromLocal8Bit("串口数据读取超时"));
          return;
         }
         mutex.lock();
@@ -133,4 +130,3 @@ void serialportThread::run()
         mutex.unlock();
     }
 }
-

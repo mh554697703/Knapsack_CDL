@@ -49,7 +49,7 @@ signals:
     void compassError(const QString &s);
     void laserseedError(const QString &s);
     void laserpulseError(const QString &s);
-    void adqError();
+    void adqError(const QString &s);
 
 private slots:
 
@@ -109,8 +109,6 @@ private:
     QDateTime CaptureTime;          // 当前方向的采集时间
     QString SpecFileName;
     QString VeloFileName;
-    QTime *CM_Time, *workTime;
-    QTime *CS_Time;
 
     QThread *Motorthread;           //motor工作的线程
 };

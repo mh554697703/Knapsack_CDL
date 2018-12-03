@@ -5,8 +5,8 @@
 laserSeed::laserSeed(QObject *parent) : QObject(parent)
 {
     connect(&laserseedThread,SIGNAL(response(QByteArray)),this,SLOT(receive_response(QByteArray)));
-    connect(&laserseedThread,&serialportThread::PortNotOpen, this,&laserSeed::laserSeedError);
-    connect(&laserseedThread,SIGNAL(timeout()),this,SLOT(timeout()));
+    connect(&laserseedThread,&serialportThread::PortNotOpen, this,&laserSeed::portError);
+    connect(&laserseedThread,SIGNAL(timeout(QString)),this,SLOT(portError(QString)));
 
     //    laserPort = "COM1";
     powerSet = true;
@@ -93,7 +93,7 @@ void laserSeed::receive_response(const QByteArray &s)
                 }
                 else
                 {
-                    errorCode = "种子源激光器打开异常";
+                    errorCode =QString::fromLocal8Bit("种子源激光器打开异常");
                     emit this->laserSeedError(errorCode);
                 }
                 fire = false;
@@ -107,7 +107,7 @@ void laserSeed::receive_response(const QByteArray &s)
                 }
                 else
                 {
-                    errorCode = "种子源激光器关闭异常";
+                    errorCode = QString::fromLocal8Bit("种子源激光器关闭异常");
                     emit this->laserSeedError(errorCode);
                 }
                 close = false;
@@ -119,7 +119,7 @@ void laserSeed::receive_response(const QByteArray &s)
             QString checkAnswer = temp.mid(8,2);
             if(checkAnswer == "00")
             {
-                errorCode = "种子源激光器打开异常";
+                errorCode = QString::fromLocal8Bit("种子源激光器打开异常");
                 emit this->laserSeedError(errorCode);
             }
             else
@@ -132,16 +132,16 @@ void laserSeed::receive_response(const QByteArray &s)
                     QString key = QString("%1").arg(s,4,2,QLatin1Char('0'));
                     if(key.left(1) == "1")
                     {qDebug()<<QString::fromLocal8Bit("泵浦温度异常");
-                        errorCode.append("泵浦温度异常;");}
+                        errorCode.append(QString::fromLocal8Bit("泵浦温度异常;"));}
                     if(key.right(1) == "1")
                     {qDebug()<<QString::fromLocal8Bit("模块温度异常");
-                        errorCode.append("模块温度异常;");}
+                        errorCode.append(QString::fromLocal8Bit("模块温度异常;"));}
                     if(key.mid(1,1) == "1")
                     {qDebug()<<QString::fromLocal8Bit("输入功率异常");
-                        errorCode.append("输入功率异常;");}
+                        errorCode.append(QString::fromLocal8Bit("输入功率异常;"));}
                     if(key.mid(2,1) == "1")
                     {qDebug()<<QString::fromLocal8Bit("种子激光器温度异常");
-                        errorCode.append("种子激光器温度异常;");}
+                        errorCode.append(QString::fromLocal8Bit("种子激光器温度异常;"));}
                     emit this->laserSeedError(errorCode);
                 }
                 else
@@ -163,14 +163,9 @@ void laserSeed::checkLaser()
     laserseedThread.transaction(senddata);
 }
 
-void laserSeed::portError()
+void laserSeed::portError(const QString &s)
 {
-    errorCode = "种子源激光器串口打开异常";
-    emit this->laserSeedError(errorCode);
-}
-
-void laserSeed::timeout()
-{
-    errorCode = "种子源激光器串口数据读取异常";
-    emit this->laserSeedError(errorCode);
+    QString errorCode = QString::fromLocal8Bit("种子源激光器");
+    errorCode.append(s);
+    emit laserSeedError(errorCode);
 }

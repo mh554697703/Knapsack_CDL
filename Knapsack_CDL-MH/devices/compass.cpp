@@ -7,7 +7,7 @@ compass::compass(QObject *parent)
 {
     connect(&compassThread, &serialportThread::response, this, &compass::showResponse);
     connect(&compassThread, &serialportThread::PortNotOpen, this, &compass::portError);
-    connect(&compassThread, &serialportThread::timeout, this, &compass::TimeOutError);
+    connect(&compassThread, &serialportThread::timeout, this, &compass::portError);
 
     baud = 9600;
     waittimeout = 3000;
@@ -54,14 +54,9 @@ void compass::showResponse(const QByteArray &s)
     emit this->compassAngle(headAngle);
 }
 
-void compass::portError()
+void compass::portError(const QString &s)
 {
-    QString errorCode = QString::fromLocal8Bit("罗盘串口打开异常!");
-    emit compassError(errorCode);
-}
-
-void compass::TimeOutError()
-{
-    QString errorCode = QString::fromLocal8Bit("罗盘串口数据读取异常!");
+    QString errorCode = QString::fromLocal8Bit("罗盘");
+    errorCode.append(s);
     emit compassError(errorCode);
 }

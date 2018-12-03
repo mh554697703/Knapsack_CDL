@@ -10,6 +10,7 @@ ADQ214::ADQ214(QObject *parent) : QObject(parent)
     success = true;
 
     int apirev = ADQAPI_GetRevision();     // 获取API版本
+    qDebug()<<"API_Revision = "<<apirev;
     connectADQDevice();
 
     num_of_devices = 0;
@@ -54,10 +55,13 @@ void ADQ214::connectADQDevice()
     num_of_devices = ADQControlUnit_FindDevices(adq_cu);			//找到所有与电脑连接的ADQ，并创建一个指针列表，返回找到设备的总数
     num_of_failed = ADQControlUnit_GetFailedDeviceCount(adq_cu);
     num_of_ADQ214 = ADQControlUnit_NofADQ214(adq_cu);				//返回找到ADQ214设备的数量
-    if((num_of_failed > 0)||(num_of_devices == 0)) {
-        qDebug()<<QString::fromLocal8Bit("采集卡未连接");
+    if((num_of_failed > 0)||(num_of_devices == 0))
+    {
+
         isADQ214Connected = false;
-        emit adqError();
+        QString errorcode  = QString::fromLocal8Bit("采集卡未连接");
+        emit adqError(errorcode);
+        qDebug()<<QString::fromLocal8Bit("采集卡未连接");
     }
     else if (num_of_ADQ214 != 0) {
         qDebug()<<QString::fromLocal8Bit("采集卡已连接");
@@ -74,7 +78,8 @@ bool ADQ214::Start_Capture()
 
     if(!CaptureData2Buffer()) {
         qDebug() << ("Collect failed!");
-        emit adqError();
+        QString errorcode  = "Collect failed!";
+        emit adqError(errorcode);
         delete setupadq.data_stream_target;
         return false;
     }
@@ -85,7 +90,7 @@ bool ADQ214::Start_Capture()
 
     if(success == 0) {
         qDebug() << "Error!";
-        emit adqError();
+        emit adqError("Error!");
         DeleteADQControlUnit(adq_cu);
     }
     qDebug() << "Write finished";
@@ -99,7 +104,7 @@ bool ADQ214::Config_ADQ214()                   // 配置采集卡
         //        QMessageBox::critical(NULL, QString::fromStdString("采集卡未连接！！"), QString::fromStdString("采集卡未连接"),
         //                              QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
         qDebug()<< "ADQ214 Connect failed!!!!";
-        emit adqError();
+        emit adqError("ADQ214 Connect failed!!!!");
     }
     else {
         success = ADQ214_SetDataFormat(adq_cu, adq_num,ADQ214_DATA_FORMAT_UNPACKED_16BIT);
@@ -252,6 +257,7 @@ void ADQ214::capturetimeout()
     captureTimer->stop();
     if(!success)
     {
-        emit adqError();
+        QString errorcode = QString::fromLocal8Bit("采集超时");
+        emit adqError(errorcode);
     }
 }
