@@ -399,7 +399,7 @@ void DevicesControl::LOSVelocityCal(const unsigned int heightNum, const uint tot
     }
     memset(losVelocity, 0, sizeof(double)*(heightNum-2));
     for(uint i=0; i<heightNum-2; i++) {
-        losVelocity[i] = -(freqAxis[losVelocityIndex[i]] - freqAxis[aomIndex])*lambda/2;
+        losVelocity[i] = (freqAxis[losVelocityIndex[i]] - freqAxis[aomIndex])*lambda/2;
     }
 }
 
