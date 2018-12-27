@@ -13,9 +13,9 @@ polarchart::polarchart():
     myseries = new QLineSeries();
     mypen.setColor(QColor(255,0,0));
     mypen.setWidth(4);
-    myseries->setPen(mypen);
+//    myseries->setPen(mypen);
     myseries2 = new QScatterSeries();
-    myseries2->setColor(QColor(100,0,255));
+    myseries2->setColor(QColor(0,100,250));
     myseries2->setMarkerSize(8);
 
     addSeries(myseries);

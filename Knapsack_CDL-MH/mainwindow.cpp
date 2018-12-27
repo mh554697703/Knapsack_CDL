@@ -31,15 +31,19 @@ MainWindow::MainWindow(QWidget *parent) :
     qDebug() << "Settings_PathName"<<mysetting.dataFilePath;
     checkDataFilePath();
 
+    myfont.setFamily("Microsoft Yahei");
+    myfont.setPointSize(14);
     createDockWindow();                                   //创建各显示窗口
-    createStatusBar();                                    //创建状态栏
     createActions();                                      //创建动作
     createMenus();                                        //创建菜单栏
     createToolBars();                                     //创建工具栏
+    createStatusBar();                                    //创建状态栏
 
     //显示部分
-    connect(hVelocityAngleAction,SIGNAL(triggered(bool)),this,SLOT(hVelocityAngleActionTriggered(bool)));
+    connect(hVelocityAction,SIGNAL(triggered(bool)),this,SLOT(hVelocityActionTriggered(bool)));
+    connect(hAngleAction,SIGNAL(triggered(bool)),this,SLOT(hAngleActionTriggered(bool)));
     connect(vVelocityAngleAction,SIGNAL(triggered(bool)),this,SLOT(vVelocityAngleActionTriggered(bool)));
+    connect(vVelocityAngleAction2,SIGNAL(triggered(bool)),this,SLOT(vVelocityAngleAction2Triggered(bool)));
     connect(hDataAction,&QAction::triggered,this,&MainWindow::hDataActionTriggered);
 
     UpdateHeightsValue();
@@ -120,6 +124,7 @@ void MainWindow::startActionTriggered()
         isWorking = true;
         TestTimer->start(1000);
         devicesControl->startAction(mysetting);
+        toolbar->set_to_started();
     }
     else {
         stopActionTriggered();
@@ -129,6 +134,7 @@ void MainWindow::startActionTriggered()
 void MainWindow::stopActionTriggered()
 {
     TestTimer->stop();
+    toolbar->set_to_stopped();
     if (isWorking) {
         isWorking = false;
         devicesControl->stopAction();
@@ -164,7 +170,8 @@ void MainWindow::UpdateHeightsValue()
     }
     hSpeedChart->setHeight(Height_values,nRB_ovlp);
     hAngleChart->setHeight(Height_values,nRB_ovlp);
-    vSpeedChart->setAxis(Height_values,nRB_ovlp);
+    vSpeedBarChart->setAxis(Height_values,nRB_ovlp);
+    vSpeedLineChart->setHeight(Height_values,nRB_ovlp);
 }
 
 void MainWindow::updateHVelocityDisp(double *hVelocity, uint n)
@@ -182,7 +189,8 @@ void MainWindow::updateHAngleDisp(double *hAngle, uint n)
 
 void MainWindow::updateVVelocityDisp(double *vVelocity, uint n)
 {
-    vSpeedChart->updateData(vVelocity,n);
+    vSpeedBarChart->updateData(vVelocity,n);
+    vSpeedLineChart->updateData(vVelocity,n);
     qDebug() << "VSpeed update show";
 }
 
@@ -252,7 +260,8 @@ void MainWindow::changeData()       //测试用
     }
     hSpeedChart->updateData(H_speed,14);
     hAngleChart->updateData(H_direction,14);
-    vSpeedChart->updateData(V_speed,14);
+    vSpeedBarChart->updateData(V_speed,14);
+    vSpeedLineChart->updateData(V_speed,14);
     stGraph_HSpeed->updateShow(H_speed);
 //    statusBarText->setText(QString::fromLocal8Bit(" 模拟测试中..."));
 //    stGraph_VSpeed->updateShow(V_speed);
@@ -260,8 +269,6 @@ void MainWindow::changeData()       //测试用
 
 void MainWindow::createStatusBar()              //状态栏
 {
-    myfont.setBold(true);
-    myfont.setPointSize(14);
     QHBoxLayout *hlayout = new QHBoxLayout;
     QLabel *label = new QLabel;
     label->setText(QString::fromLocal8Bit(" 系统状态: "));
@@ -331,7 +338,7 @@ void MainWindow::createStatusBar()              //状态栏
 
 void MainWindow::createDockWindow()           //各个显示窗口
 {
-    hSpeedChart = new Chart;                                 //水平风速
+    hSpeedChart = new LineChart;                                 //水平风速
     hSpeedChart->legend()->hide();
     hSpeedChart->setMinimumWidth(300);
     QChartView *hSpeedChartView = new QChartView(hSpeedChart);
@@ -342,22 +349,20 @@ void MainWindow::createDockWindow()           //各个显示窗口
     hAngleChart->setMinimumWidth(300);
     QChartView *hAngleChartView = new QChartView(hAngleChart);
 
-    vSpeedChart = new barchart;                              //垂直风
-    vSpeedChart->legend()->hide();
-    vSpeedChart->setMinimumWidth(300);
-    vSpeedChart->setAutoFillBackground(true);
-    QChartView *vSpeedChartView = new QChartView(vSpeedChart);
+    vSpeedBarChart = new barchart;                              //垂直风柱形图
+    vSpeedBarChart->legend()->hide();
+    vSpeedBarChart->setMinimumWidth(300);
+    vSpeedBarChart->setAutoFillBackground(true);
+    vSpeedChartView = new QChartView(vSpeedBarChart);
+
+    vSpeedLineChart = new LineChart;        //垂直风折线图
+    vSpeedLineChart->legend()->hide();
+    vSpeedLineChart->setMinimumWidth(300);
+    vSpeedLineChart->setAutoFillBackground(true);
+    vSpeedChart2View = new QChartView(vSpeedLineChart);
 
     stGraph_HSpeed = new STGraph();                           //水平风场时空图
     stGraph_HSpeed->setMinimumSize(330,550);
-
-    QHBoxLayout *HLayout = new QHBoxLayout;
-    HLayout->addWidget(hSpeedChartView,0,Qt::AlignLeft);
-    HLayout->addWidget(hAngleChartView,0,Qt::AlignLeft);
-    HLayout->setStretchFactor(hSpeedChartView,1);
-    HLayout->setStretchFactor(hAngleChartView,1);
-    QWidget *myWidget = new QWidget;
-    myWidget->setLayout(HLayout);
 
     //水平风速时空图窗口
     dock1 = new QDockWidget(tr("DockWindow 1"),this);
@@ -368,24 +373,36 @@ void MainWindow::createDockWindow()           //各个显示窗口
     addDockWidget(Qt::TopDockWidgetArea,dock1);
 
     //水平风速/风向窗口
-    dock2 = new QDockWidget(tr("DockWindow 2"),this);
-    dock2->setWindowTitle(QString::fromLocal8Bit("水平风速/风向"));
+    dock2 = new QDockWidget(QString::fromLocal8Bit("水平风速"),this);
     dock2->setFeatures(QDockWidget::NoDockWidgetFeatures);
-    dock2->setWidget(myWidget);
+    dock2->setWidget(hSpeedChartView);
     addDockWidget(Qt::TopDockWidgetArea,dock2);
 
-    //垂直风速窗口
-    dock3 = new QDockWidget(tr("DockWindow 3"),this);
-    dock3->setWindowTitle(QString::fromLocal8Bit("垂直风速/风向"));
+    dock3 = new QDockWidget(QString::fromLocal8Bit("水平风向"),this);
     dock3->setFeatures(QDockWidget::NoDockWidgetFeatures);
-    dock3->setAllowedAreas(Qt::TopDockWidgetArea|Qt::RightDockWidgetArea);
-    dock3->setWidget(vSpeedChartView);
+    dock3->setWidget(hAngleChartView);
     addDockWidget(Qt::TopDockWidgetArea,dock3);
+
+    //垂直风速窗口
+    dock4 = new QDockWidget(QString::fromLocal8Bit("垂直风速/风向"),this);
+    dock4->setFeatures(QDockWidget::NoDockWidgetFeatures);
+    dock4->setAllowedAreas(Qt::TopDockWidgetArea|Qt::RightDockWidgetArea);
+    dock4->setWidget(vSpeedChartView);
+    addDockWidget(Qt::TopDockWidgetArea,dock4);
+
+    dock5 = new QDockWidget(QString::fromLocal8Bit("垂直风速/风向"),this);
+    dock5->setFeatures(QDockWidget::NoDockWidgetFeatures);
+    dock5->setAllowedAreas(Qt::TopDockWidgetArea|Qt::RightDockWidgetArea);
+    dock5->setWidget(vSpeedChart2View);
+    dock5->setVisible(false);
+    addDockWidget(Qt::TopDockWidgetArea,dock5);
+    qDebug()<<"createDockWindow";
 }
 
 void MainWindow::createMenus()              //菜单栏
 {
     startMenu = menuBar()->addMenu(QString::fromLocal8Bit("探测"));
+    startMenu->setFont(myfont);
     startMenu->addAction(startAction);
     startMenu->addAction(stopAction);
     setMenu = menuBar()->addMenu(QString::fromLocal8Bit("设置"));
@@ -393,9 +410,15 @@ void MainWindow::createMenus()              //菜单栏
     quitMenu = menuBar()->addMenu(QString::fromLocal8Bit("退出"));
     quitMenu->addAction(quitAction);
     showMenu = menuBar()->addMenu(QString::fromLocal8Bit("显示"));
-    showMenu->addAction(hVelocityAngleAction);
-    showMenu->addAction(vVelocityAngleAction);
     showMenu->addAction(hDataAction);
+    showMenu->addAction(hVelocityAction);
+    showMenu->addAction(hAngleAction);
+    vVelocityAngleMenu = showMenu->addMenu(QString::fromLocal8Bit("垂直风速"));
+
+    vVelocityAngleMenu->setFont(myfont);
+    vVelocityAngleMenu->addAction(vVelocityAngleAction);
+    vVelocityAngleMenu->addAction(vVelocityAngleAction2);
+    qDebug()<<"createMenus";
 }
 
 void MainWindow::createToolBars()           //工具栏
@@ -415,36 +438,55 @@ void MainWindow::createActions()          //菜单栏动作
     startAction = new QAction(QString::fromLocal8Bit("开始探测"));
     stopAction = new QAction(QString::fromLocal8Bit("停止探测"));
     quitAction = new QAction(QString::fromLocal8Bit("退出"));
-    hVelocityAngleAction = new QAction(QString::fromLocal8Bit("水平风速/风向"));
-    vVelocityAngleAction = new QAction(QString::fromLocal8Bit("垂直风速/风向"));
+    hVelocityAction = new QAction(QString::fromLocal8Bit("水平风速"));
+    hAngleAction = new QAction(QString::fromLocal8Bit("水平风向"));
+    vVelocityAngleAction = new QAction(QString::fromLocal8Bit("柱形图"));
     hDataAction = new QAction(QString::fromLocal8Bit("水平风速时空分布"));
+    vVelocityAngleAction2 = new QAction(QString::fromLocal8Bit("折线图"));
 
-    myfont.setPointSize(12);
-    myfont.setBold(false);
     startAction->setFont(myfont);
     setAction->setFont(myfont);
     stopAction->setFont(myfont);
     quitAction->setFont(myfont);
-    hVelocityAngleAction->setFont(myfont);
+    hVelocityAction->setFont(myfont);
+    hAngleAction->setFont(myfont);
     vVelocityAngleAction->setFont(myfont);
+    vVelocityAngleAction2->setFont(myfont);
     hDataAction->setFont(myfont);
 
-    hVelocityAngleAction->setCheckable(true);
-    hVelocityAngleAction->setChecked(true);
+    hVelocityAction->setCheckable(true);
+    hVelocityAction->setChecked(true);
+    hAngleAction->setCheckable(true);
+    hAngleAction->setChecked(true);
     vVelocityAngleAction->setCheckable(true);
     vVelocityAngleAction->setChecked(true);
+    vVelocityAngleAction2->setCheckable(true);
+    vVelocityAngleAction2->setChecked(false);
     hDataAction->setCheckable(true);
     hDataAction->setChecked(true);
+    qDebug()<<"createActions";
 }
 
-void MainWindow::hVelocityAngleActionTriggered(const bool a)
+void MainWindow::vVelocityAngleAction2Triggered(const bool a)
+{
+    vVelocityAngleAction->setChecked(!a);
+    dock5->setVisible(a);
+    dock4->setVisible(!a);
+}
+void MainWindow::hVelocityActionTriggered(const bool a)
 {
     dock2->setVisible(a);
 }
 
-void MainWindow::vVelocityAngleActionTriggered(const bool a)
+void MainWindow::hAngleActionTriggered(const bool a)
 {
     dock3->setVisible(a);
+}
+void MainWindow::vVelocityAngleActionTriggered(const bool a)
+{
+    vVelocityAngleAction2->setChecked(!a);
+    dock4->setVisible(a);
+    dock5->setVisible(!a);
 }
 
 void MainWindow::hDataActionTriggered(const bool a)

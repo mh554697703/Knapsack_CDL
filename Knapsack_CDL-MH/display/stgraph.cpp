@@ -54,6 +54,7 @@ void STGraph::initialShow(uint nLayers, double minHeight, double heightStep)
     //    ticks << 132 << 220 << 308 << 396 << 484 << 572 << 660 << 748 << 836 << 924 << 1012 << 1100;
     for(uint i=0;i<nLayers;i++) {
         ticks += minHeight + i*heightStep;
+        ticks[i] =QString::number(ticks[i],'f',0).toDouble();
     }
     QwtScaleDiv scaleDiv(minHeight-heightStep/2, minHeight + (nLayers-1)*heightStep+heightStep/2);
     scaleDiv.setTicks(QwtScaleDiv::MajorTick, ticks);

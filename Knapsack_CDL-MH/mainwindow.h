@@ -19,8 +19,10 @@
 #include <QWidget>
 #include <QToolBar>
 #include <QAction>
+#include <QActionGroup>
 #include <QMouseEvent>
 #include <QKeyEvent>
+#include <QChartView>
 #include "usertoolbar.h"
 #include "admintoolbar.h"
 #include "devicescontrol.h"
@@ -45,7 +47,6 @@ public:
     void createActions();
     void createStatusBar();
     void createDockWindow();
-
     int H_low;
     int H_high;
 
@@ -65,9 +66,11 @@ private slots:
     void startActionTriggered();          //启动
     void stopActionTriggered();          //停止
     void quitActionTriggered();           //退出
-    void hVelocityAngleActionTriggered(const bool a);
+    void hVelocityActionTriggered(const bool a);
+    void hAngleActionTriggered(const bool a);
     void vVelocityAngleActionTriggered(const bool a);
     void hDataActionTriggered(const bool a);
+    void vVelocityAngleAction2Triggered(const bool a);
     // GUI界面相关
     void UpdateHeightsValue();
 
@@ -106,15 +109,16 @@ private:
     SettingFile *m_setfile;
 
     QTimer *TestTimer;
-    QDockWidget *dock1,*dock2,*dock3; //分别为历史数据窗口，水平风窗口，垂直风窗口。
+    QDockWidget *dock1,*dock2,*dock3,*dock4,*dock5; //分别为时空图窗口，水平风速窗口，水平风向窗口，垂直风柱形图窗口。垂直风折线图窗口
     QPushButton *compassbutton,*adqbutton,*motorbutton,*seedbutton,*pulsebutton;
-    Chart *hSpeedChart;
+    LineChart *hSpeedChart,*vSpeedLineChart;
     polarchart *hAngleChart;
-    barchart *vSpeedChart;
+    barchart *vSpeedBarChart;
+    QChartView *hSpeedChartView,*hAngleChartView,*vSpeedChartView,*vSpeedChart2View;
     QAction *startAction,*stopAction,*setAction,*quitAction,
-            *hVelocityAngleAction,*vVelocityAngleAction,*hDataAction;
+            *hVelocityAction,*hAngleAction,*vVelocityAngleAction,*vVelocityAngleAction2,*hDataAction;
 
-    QMenu *startMenu,*stopMenu,*setMenu,*quitMenu,*showMenu;
+    QMenu *startMenu,*setMenu,*quitMenu,*showMenu,*vVelocityAngleMenu;
     UserToolBar *toolbar;
     QFont myfont;
     QLabel *statusBarText;

@@ -11,7 +11,7 @@ barchart::barchart()
 
     createDefaultAxes();
     setAxisY(axis,barseries);
-    axisX(barseries)->setRange(-10,10);
+    axisX(barseries)->setRange(-5,5);
     axisX(barseries)->setTitleFont(barchartFont);
     axisX(barseries)->setTitleText(QString::fromLocal8Bit("·çËÙ (m/s)"));
 }
@@ -26,8 +26,8 @@ void barchart::setAxis(const double *h, unsigned int n)
     QString b;
     for(uint i=0;i<n;i++)
     {
-        b = QString::number(h[i],'g',5);
-        categories.append(b);
+            b = QString::number(h[i],'f',0);
+            categories.append(b);
     }
 //    categories << "200m" << "300m" << "400m" << "500m" << "600m" << "700m";
     axis->clear();

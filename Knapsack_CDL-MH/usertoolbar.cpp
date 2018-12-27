@@ -41,3 +41,8 @@ void UserToolBar::set_to_stopped()      //设定为停止状态，即图标为可以开始
     startAction->setIcon(QIcon(":/images/Start.png"));
     startIcon = true;
 }
+ void UserToolBar::set_to_started()
+ {
+     startAction->setIcon(QIcon(":/images/Stop.png"));
+     startIcon =false;
+ }

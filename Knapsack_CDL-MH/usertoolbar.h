@@ -12,6 +12,7 @@ public:
 public slots:
     void changeStartIcon();
     void set_to_stopped();
+    void set_to_started();
 private:
     bool startIcon;     // 开始采集按钮的当前状态，ture为采集，false为停止
 };

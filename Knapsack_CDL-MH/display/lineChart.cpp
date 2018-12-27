@@ -6,7 +6,7 @@
 #include <QtCore/QRandomGenerator>
 #include <QtCore/QDebug>
 
-Chart::Chart(QGraphicsItem *parent, Qt::WindowFlags wFlags):
+LineChart::LineChart(QGraphicsItem *parent, Qt::WindowFlags wFlags):
     QChart(QChart::ChartTypeCartesian, parent, wFlags),
     m_series(nullptr),
   m_axisX(new QValueAxis),
@@ -14,22 +14,29 @@ Chart::Chart(QGraphicsItem *parent, Qt::WindowFlags wFlags):
   m_step(0)
 {
     setChart();
-    m_series = new QSplineSeries;
+    m_series = new QLineSeries;
     mypen.setColor(QColor(0,220,255));
     mypen.setWidth(4);
     m_series->setPen(mypen);
+
+    myseries2 = new QScatterSeries;
+    myseries2->setColor(QColor(0,100,250));
+    myseries2->setMarkerSize(8);
     addSeries(m_series);
+    addSeries(myseries2);
     legend()->hide();
     setAxisX(m_axisX,m_series);
     setAxisY(m_axisY,m_series);
+    myseries2->attachAxis(m_axisX);
+    myseries2->attachAxis(m_axisY);
 }
 
-Chart::~Chart()
+LineChart::~LineChart()
 {
 
 }
 
-void Chart::setChart()
+void LineChart::setChart()
 {  
     mypen.setColor(QColor(0,0,0));
     mypen.setWidthF(0.5);
@@ -51,7 +58,7 @@ void Chart::setChart()
     m_axisY->setTickCount(13);
 }
 
-void Chart::updateData(const double *sp, const uint n)
+void LineChart::updateData(const double *sp, const uint n)
 {
     X = new double [n];
 
@@ -60,14 +67,51 @@ void Chart::updateData(const double *sp, const uint n)
         X[i] = sp[i];
     }
     m_series->clear();
+    myseries2->clear();
     for(uint i=0;i<n;i++)
     {
         m_series->append(X[i],Y[i]);
+        myseries2->append(X[i],Y[i]);
     }
+    QList<int> list;
+    for(int i=0;i<n;i++)
+        list.push_back(X[i]);
+    qSort(list.begin(), list.end());
+    int Xmin=list.first();
+    qDebug()<<"Xmin = "<<Xmin;
+    int Xmax=list.last();
+    qDebug()<<"Xmax = "<<Xmax;
+    if(Xmin<=0)
+    {
+        if(Xmin<=-5)
+            Xmin=-10;
+        else
+            Xmin=-5;
+    }
+    else
+        Xmin=0;
+    if(Xmax>=0)
+    {
+        if(Xmax>=5)
+        {
+            if(Xmax>=10)
+                Xmax = 20;
+            else
+                Xmax = 10;
+        }
+        else
+            Xmax =5;
+    }
+    else
+        Xmax=0;
+    int count=(Xmax-Xmin)/5+1;
+    m_axisX->setRange(Xmin,Xmax);
+    m_axisX->setTickCount(count);
+
     delete X;
 }
 
-void Chart::setHeight(const double *h, unsigned int n)
+void LineChart::setHeight(const double *h, unsigned int n)
 {
     Y = new double [n];
     for(unsigned int i=0;i<n;i++)
