@@ -387,13 +387,13 @@ void MainWindow::createDockWindow()           //各个显示窗口
     dock4->setFeatures(QDockWidget::NoDockWidgetFeatures);
     dock4->setAllowedAreas(Qt::TopDockWidgetArea|Qt::RightDockWidgetArea);
     dock4->setWidget(vSpeedChartView);
+    dock4->setVisible(false);
     addDockWidget(Qt::TopDockWidgetArea,dock4);
 
     dock5 = new QDockWidget(QString::fromLocal8Bit("垂直风速(m/s)与风向"),this);
     dock5->setFeatures(QDockWidget::NoDockWidgetFeatures);
     dock5->setAllowedAreas(Qt::TopDockWidgetArea|Qt::RightDockWidgetArea);
     dock5->setWidget(vSpeedChart2View);
-    dock5->setVisible(false);
     addDockWidget(Qt::TopDockWidgetArea,dock5);
     qDebug()<<"createDockWindow";
 }
@@ -416,8 +416,8 @@ void MainWindow::createMenus()              //菜单栏
     vVelocityAngleMenu = showMenu->addMenu(QString::fromLocal8Bit("垂直风速/风向"));
 
     vVelocityAngleMenu->setFont(myfont);
-    vVelocityAngleMenu->addAction(vVelocityAngleAction);
     vVelocityAngleMenu->addAction(vVelocityAngleAction2);
+    vVelocityAngleMenu->addAction(vVelocityAngleAction);
     qDebug()<<"createMenus";
 }
 
@@ -459,9 +459,9 @@ void MainWindow::createActions()          //菜单栏动作
     hAngleAction->setCheckable(true);
     hAngleAction->setChecked(true);
     vVelocityAngleAction->setCheckable(true);
-    vVelocityAngleAction->setChecked(true);
+    vVelocityAngleAction->setChecked(false);
     vVelocityAngleAction2->setCheckable(true);
-    vVelocityAngleAction2->setChecked(false);
+    vVelocityAngleAction2->setChecked(true);
     hDataAction->setCheckable(true);
     hDataAction->setChecked(true);
     qDebug()<<"createActions";
