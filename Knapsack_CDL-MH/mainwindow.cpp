@@ -52,6 +52,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(devicesControl, &DevicesControl::hVelocityReady, this, &MainWindow::updateHVelocityDisp);
     connect(devicesControl, &DevicesControl::hAngleReady, this, &MainWindow::updateHAngleDisp);
     connect(devicesControl, &DevicesControl::vVelocityReady, this, &MainWindow::updateVVelocityDisp);
+    connect(devicesControl, &DevicesControl::WorkingComplete, this, &MainWindow::stopActionTriggered);
 
     connect(devicesControl, &DevicesControl::laserseedError, this,&MainWindow::LaserseedError);
     connect(devicesControl, &DevicesControl::laserpulseError, this,&MainWindow::LaserpulseError);
@@ -123,6 +124,7 @@ void MainWindow::startActionTriggered()
         adqbutton->setStyleSheet("background-color:rgb(0,255,100);");
         isWorking = true;
         TestTimer->start(1000);
+        statusBarText->setText(QString::fromLocal8Bit("探测进行中..."));
         devicesControl->startAction(mysetting);
         toolbar->set_to_started();
     }
@@ -139,6 +141,7 @@ void MainWindow::stopActionTriggered()
         isWorking = false;
         devicesControl->stopAction();
     }
+    statusBarText->setText(QString::fromLocal8Bit("未进行探测"));
 }
 void MainWindow::resizeEvent(QResizeEvent * event)
 {
@@ -410,6 +413,7 @@ void MainWindow::createMenus()              //菜单栏
     quitMenu = menuBar()->addMenu(QString::fromLocal8Bit("退出"));
     quitMenu->addAction(quitAction);
     showMenu = menuBar()->addMenu(QString::fromLocal8Bit("显示"));
+    showMenu->setFont(myfont);
     showMenu->addAction(hDataAction);
     showMenu->addAction(hVelocityAction);
     showMenu->addAction(hAngleAction);
