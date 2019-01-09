@@ -52,5 +52,38 @@ void barchart::updateData(const double *sp, const unsigned int n)
     }
     barseries->clear();
     barseries->append(barset2);
+
+    QList<int> list;
+    for(int i=0;i<n;i++)
+        list.push_back(Velocity[i]);
+    qSort(list.begin(), list.end());
+    int Xmin=list.first();
+    qDebug()<<"Xmin = "<<Xmin;
+    int Xmax=list.last();
+    qDebug()<<"Xmax = "<<Xmax;
+    if(Xmin<=0)
+    {
+        if(Xmin<=-5)
+            Xmin=-10;
+        else
+            Xmin=-5;
+    }
+    else
+        Xmin=0;
+    if(Xmax>=0)
+    {
+        if(Xmax>=5)
+        {
+            if(Xmax>=10)
+                Xmax = 20;
+            else
+                Xmax = 10;
+        }
+        else
+            Xmax =5;
+    }
+    else
+        Xmax=0;
+    axisX()->setRange(Xmin,Xmax);
     delete Velocity;
 }
