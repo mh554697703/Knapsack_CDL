@@ -116,6 +116,7 @@ void MainWindow::quitActionTriggered()
 
 void MainWindow::startActionTriggered()
 {  
+    qDebug()<<"dock1_Hight = "<<dock1->height();
     if (!isWorking) {
         compassbutton->setStyleSheet("background-color:rgb(0,255,100);");
         seedbutton->setStyleSheet("background-color:rgb(0,255,100);");
@@ -142,11 +143,6 @@ void MainWindow::stopActionTriggered()
         devicesControl->stopAction();
     }
     statusBarText->setText(QString::fromLocal8Bit("未进行探测"));
-}
-void MainWindow::resizeEvent(QResizeEvent * event)
-{
-    QMainWindow::resizeEvent(event);
-    emit size_changed();
 }
 
 void MainWindow::UpdateHeightsValue()
@@ -343,29 +339,29 @@ void MainWindow::createDockWindow()           //各个显示窗口
 {
     hSpeedChart = new LineChart;                                 //水平风速
     hSpeedChart->legend()->hide();
-    hSpeedChart->setMinimumWidth(300);
+    hSpeedChart->setMinimumWidth(250);
     QChartView *hSpeedChartView = new QChartView(hSpeedChart);
     hSpeedChartView->setRenderHint (QPainter::Antialiasing);       //对图像进行抗锯齿处理
 
     hAngleChart = new polarchart;                             //水平风向
     hAngleChart->legend()->hide();
-    hAngleChart->setMinimumWidth(300);
+    hAngleChart->setMinimumSize(250,600);
     QChartView *hAngleChartView = new QChartView(hAngleChart);
 
     vSpeedBarChart = new barchart;                              //垂直风柱形图
     vSpeedBarChart->legend()->hide();
-    vSpeedBarChart->setMinimumWidth(300);
+    vSpeedBarChart->setMinimumSize(250,600);
     vSpeedBarChart->setAutoFillBackground(true);
     vSpeedChartView = new QChartView(vSpeedBarChart);
 
     vSpeedLineChart = new LineChart;        //垂直风折线图
     vSpeedLineChart->legend()->hide();
-    vSpeedLineChart->setMinimumWidth(300);
+    vSpeedLineChart->setMinimumSize(250,600);
     vSpeedLineChart->setAutoFillBackground(true);
     vSpeedChart2View = new QChartView(vSpeedLineChart);
 
     stGraph_HSpeed = new STGraph();                           //水平风场时空图
-    stGraph_HSpeed->setMinimumSize(330,550);
+    stGraph_HSpeed->setMinimumSize(250,600);
 
     //水平风速时空图窗口
     dock1 = new QDockWidget(tr("DockWindow 1"),this);
@@ -376,24 +372,24 @@ void MainWindow::createDockWindow()           //各个显示窗口
     addDockWidget(Qt::TopDockWidgetArea,dock1);
 
     //水平风速/风向窗口
-    dock2 = new QDockWidget(QString::fromLocal8Bit("水平风速"),this);
+    dock2 = new QDockWidget(QString::fromLocal8Bit("水平风速(m/s)"),this);
     dock2->setFeatures(QDockWidget::NoDockWidgetFeatures);
     dock2->setWidget(hSpeedChartView);
     addDockWidget(Qt::TopDockWidgetArea,dock2);
 
-    dock3 = new QDockWidget(QString::fromLocal8Bit("水平风向"),this);
+    dock3 = new QDockWidget(QString::fromLocal8Bit("水平风向(m/s)"),this);
     dock3->setFeatures(QDockWidget::NoDockWidgetFeatures);
     dock3->setWidget(hAngleChartView);
     addDockWidget(Qt::TopDockWidgetArea,dock3);
 
     //垂直风速窗口
-    dock4 = new QDockWidget(QString::fromLocal8Bit("垂直风速/风向"),this);
+    dock4 = new QDockWidget(QString::fromLocal8Bit("垂直风速(m/s)与风向"),this);
     dock4->setFeatures(QDockWidget::NoDockWidgetFeatures);
     dock4->setAllowedAreas(Qt::TopDockWidgetArea|Qt::RightDockWidgetArea);
     dock4->setWidget(vSpeedChartView);
     addDockWidget(Qt::TopDockWidgetArea,dock4);
 
-    dock5 = new QDockWidget(QString::fromLocal8Bit("垂直风速/风向"),this);
+    dock5 = new QDockWidget(QString::fromLocal8Bit("垂直风速(m/s)与风向"),this);
     dock5->setFeatures(QDockWidget::NoDockWidgetFeatures);
     dock5->setAllowedAreas(Qt::TopDockWidgetArea|Qt::RightDockWidgetArea);
     dock5->setWidget(vSpeedChart2View);
@@ -417,7 +413,7 @@ void MainWindow::createMenus()              //菜单栏
     showMenu->addAction(hDataAction);
     showMenu->addAction(hVelocityAction);
     showMenu->addAction(hAngleAction);
-    vVelocityAngleMenu = showMenu->addMenu(QString::fromLocal8Bit("垂直风速"));
+    vVelocityAngleMenu = showMenu->addMenu(QString::fromLocal8Bit("垂直风速/风向"));
 
     vVelocityAngleMenu->setFont(myfont);
     vVelocityAngleMenu->addAction(vVelocityAngleAction);
@@ -471,12 +467,6 @@ void MainWindow::createActions()          //菜单栏动作
     qDebug()<<"createActions";
 }
 
-void MainWindow::vVelocityAngleAction2Triggered(const bool a)
-{
-    vVelocityAngleAction->setChecked(!a);
-    dock5->setVisible(a);
-    dock4->setVisible(!a);
-}
 void MainWindow::hVelocityActionTriggered(const bool a)
 {
     dock2->setVisible(a);
@@ -488,9 +478,24 @@ void MainWindow::hAngleActionTriggered(const bool a)
 }
 void MainWindow::vVelocityAngleActionTriggered(const bool a)
 {
-    vVelocityAngleAction2->setChecked(!a);
+    vVelocityAngleAction->setChecked(a);
     dock4->setVisible(a);
-    dock5->setVisible(!a);
+    if(dock5->isVisible())
+    {
+        vVelocityAngleAction2->setChecked(false);
+        dock5->setVisible(false);
+    }
+}
+
+void MainWindow::vVelocityAngleAction2Triggered(const bool a)
+{
+    vVelocityAngleAction2->setChecked(a);
+    dock5->setVisible(a);
+    if(dock4->isVisible())
+    {
+        vVelocityAngleAction->setChecked(false);
+        dock4->setVisible(false);
+    }
 }
 
 void MainWindow::hDataActionTriggered(const bool a)
@@ -534,4 +539,21 @@ void MainWindow::on_CompassButton_clicked()            //测试用
     qDebug()<<"window width ="<<this->width();
     qDebug()<<"window heigh ="<<this->height();
     qDebug()<<"button heigh ="<<compassbutton->height();
+}
+
+void MainWindow::changeEvent(QEvent *event)           //窗口最大化时重新调整图表大小
+{
+    if(event->type()!=QEvent::WindowStateChange) return;
+       if(this->windowState()==Qt::WindowMaximized)
+       {
+           dock3->setMinimumHeight(height()-150);
+       }
+}
+
+void MainWindow::resizeEvent(QResizeEvent * event)    //窗口尺寸变换时重新调整图表大小
+{
+//    QMainWindow::resizeEvent(event);
+//    hSpeedChart->setMinimumHeight(height()-168);
+    dock3->setMinimumHeight(height()-150);
+//    emit size_changed();
 }

@@ -86,6 +86,7 @@ private slots:
     void LaserpulseError(const QString &s);
     void AdqError(const QString &s);
     void on_CompassButton_clicked();
+    void changeEvent(QEvent *event);
 
 private:
     Ui::MainWindow *ui;

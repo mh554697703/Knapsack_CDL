@@ -11,7 +11,7 @@ int main(int argc, char *argv[])
     QFont font = w.font();
     font.setPointSize(14);
     w.setFont(font);
-    w.setMinimumSize(1262,745);
+    w.setMinimumSize(1027,768);
     w.show();
 
 //    w.showMaximized();
