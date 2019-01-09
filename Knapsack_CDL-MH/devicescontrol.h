@@ -50,6 +50,7 @@ signals:
     void laserseedError(const QString &s);
     void laserpulseError(const QString &s);
     void adqError(const QString &s);
+    void WorkingComplete();
 
 private slots:
 

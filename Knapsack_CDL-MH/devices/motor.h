@@ -41,11 +41,9 @@ private:
     QString portname, Order_str, AC, DC, PR, PA, SP;
     //    串口名   发送命令 加减速度 相对/绝对移动 转速
     serialportThread motorThread;
-    QTimer *checkMoveTimer = NULL;     //用于检查电机是否在转动
+    QTimer *checkMoveTimer = nullptr;     //用于检查电机是否在转动
 
     int baud, waittimeout, waitForReadyReadTime;
-    QTime *moveTime;
-
 };
 
 #endif // MOTOR_H

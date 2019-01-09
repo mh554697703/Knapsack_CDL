@@ -6,7 +6,6 @@
 
 motor::motor(QObject *parent) : QObject(parent)
 {
-    moveTime = new QTime();
     checkMoveTimer = new QTimer(this);
     connect(&motorThread,SIGNAL(response(QByteArray)),this,SLOT(receive_response(QByteArray)));
     connect(&motorThread,SIGNAL(PortNotOpen(QString)),this,SLOT(PortError(QString)));
@@ -47,7 +46,6 @@ void motor::moveAbsolute(const double &a)
 void motor::moveRelative(const double &a)
 {
     qDebug()<<"moveRelative";
-    moveTime->start();
     QString anglePR=QString::number(a*524288/360,'f',2);
     Order_str = "PR="+anglePR+";";
 
@@ -93,8 +91,6 @@ void motor::checkMotorAngle(const double &s)
             if(motorPX0<mysetting.azAngleStep)
                 motorPX0 = motorPX0+360;
             emit this->positionArrived(motorPX0);
-            int motorMoveTime = moveTime->elapsed();
-            qDebug()<<"motorMoveTime = "<<motorMoveTime;
         }
         else
         {

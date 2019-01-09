@@ -310,6 +310,7 @@ void DevicesControl::beginWork()
             else
             {
                 keepWorking = false;                    //在此处结束while循环，但之后要干什么呢？？
+                this->WorkingComplete();
                 qDebug() << "working end!!!";
             }
         }
