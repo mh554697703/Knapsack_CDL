@@ -7,13 +7,13 @@ barchart::barchart()
     barseries = new QHorizontalStackedBarSeries();
     addSeries(barseries);
     barchartFont.setPointSize(14);
-    barchartFont.setBold(true);
+    barchartFont.setFamily("Microsoft Yahei");
 
     createDefaultAxes();
     setAxisY(axis,barseries);
     axisX(barseries)->setRange(-5,5);
     axisX(barseries)->setTitleFont(barchartFont);
-    axisX(barseries)->setTitleText(QString::fromLocal8Bit("风速 (m/s)"));
+//    axisX(barseries)->setTitleText(QString::fromLocal8Bit("风速 (m/s)"));
 }
 
 barchart::~barchart()
@@ -32,7 +32,7 @@ void barchart::setAxis(const double *h, unsigned int n)
 //    categories << "200m" << "300m" << "400m" << "500m" << "600m" << "700m";
     axis->clear();
     axis->append(categories);
-    axis->setTitleText(QString::fromLocal8Bit("高度 (m)"));
+//    axis->setTitleText(QString::fromLocal8Bit("高度 (m)"));
     removeAxis(axisY());
     setAxisY(axis,barseries);
     axisY()->setTitleFont(barchartFont);
@@ -84,6 +84,8 @@ void barchart::updateData(const double *sp, const unsigned int n)
     }
     else
         Xmax=0;
-    axisX()->setRange(Xmin,Xmax);
+    int XminA =qAbs(Xmin);
+    int max = qMax(Xmax,XminA);
+    axisX()->setRange(-max,max);
     delete Velocity;
 }

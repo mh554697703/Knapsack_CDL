@@ -40,19 +40,20 @@ void LineChart::setChart()
 {  
     mypen.setColor(QColor(0,0,0));
     mypen.setWidthF(0.5);
-    linechartFont.setBold(true);
+    linechartFont.setFamily("Microsoft Yahei");
     linechartFont.setPointSize(14);
+
 
     m_axisX->setRange(0,20);
     m_axisX->setLabelFormat("%i");
-    m_axisX->setTitleText(QString::fromLocal8Bit("风速 (m/s)"));
+//    m_axisX->setTitleText(QString::fromLocal8Bit("风速 (m/s)"));
     m_axisX->setTitleFont(linechartFont);
     m_axisX->setGridLinePen(mypen);
     m_axisX->setMinorTickCount(4);
 
     m_axisY->setRange(100,1300);
     m_axisY->setLabelFormat("%i");
-    m_axisY->setTitleText(QString::fromLocal8Bit("高度 (m)"));
+//    m_axisY->setTitleText(QString::fromLocal8Bit("高度 (m)"));
     m_axisY->setTitleFont(linechartFont);
     m_axisY->setGridLinePen(mypen);
     m_axisY->setTickCount(13);
@@ -81,7 +82,7 @@ void LineChart::updateData(const double *sp, const uint n)
     qDebug()<<"Xmin = "<<Xmin;
     int Xmax=list.last();
     qDebug()<<"Xmax = "<<Xmax;
-    if(Xmin<=0)
+    if(Xmin<0)
     {
         if(Xmin<=-5)
             Xmin=-10;
@@ -104,9 +105,20 @@ void LineChart::updateData(const double *sp, const uint n)
     }
     else
         Xmax=0;
-    int count=(Xmax-Xmin)/5+1;
-    m_axisX->setRange(Xmin,Xmax);
-    m_axisX->setTickCount(count);
+    int XminA =qAbs(Xmin);
+    int max = qMax(Xmax,XminA);
+    if(Xmin == 0)
+    {
+        int count=(Xmax-Xmin)/5+1;
+        m_axisX->setRange(Xmin,Xmax);
+        m_axisX->setTickCount(count);
+    }
+    else
+    {
+        int count=(max*2)/5+1;
+        m_axisX->setRange(-max,max);
+        m_axisX->setTickCount(count);
+    }
 
     delete X;
 }
