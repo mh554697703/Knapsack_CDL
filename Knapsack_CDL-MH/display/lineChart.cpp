@@ -41,13 +41,14 @@ void LineChart::setChart()
     mypen.setColor(QColor(0,0,0));
     mypen.setWidthF(0.5);
     linechartFont.setFamily("Microsoft Yahei");
-    linechartFont.setPointSize(14);
+    linechartFont.setPointSize(10);
 
 
     m_axisX->setRange(0,20);
     m_axisX->setLabelFormat("%i");
 //    m_axisX->setTitleText(QString::fromLocal8Bit("风速 (m/s)"));
     m_axisX->setTitleFont(linechartFont);
+    m_axisX->setLabelsFont(linechartFont);
     m_axisX->setGridLinePen(mypen);
     m_axisX->setMinorTickCount(4);
 
@@ -55,6 +56,7 @@ void LineChart::setChart()
     m_axisY->setLabelFormat("%i");
 //    m_axisY->setTitleText(QString::fromLocal8Bit("高度 (m)"));
     m_axisY->setTitleFont(linechartFont);
+    m_axisY->setLabelsFont(linechartFont);
     m_axisY->setGridLinePen(mypen);
     m_axisY->setTickCount(13);
 }
@@ -79,9 +81,7 @@ void LineChart::updateData(const double *sp, const uint n)
         list.push_back(X[i]);
     qSort(list.begin(), list.end());
     int Xmin=list.first();
-    qDebug()<<"Xmin = "<<Xmin;
     int Xmax=list.last();
-    qDebug()<<"Xmax = "<<Xmax;
     if(Xmin<0)
     {
         if(Xmin<=-5)

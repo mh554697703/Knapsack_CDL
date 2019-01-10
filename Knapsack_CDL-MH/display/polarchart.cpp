@@ -37,19 +37,24 @@ void polarchart::setAxis()
 {
     mypen.setColor(QColor(200,200,200));
     mypen.setWidth(1);
-
-    angularAxis->setRange(0,360);
-    angularAxis->setGridLinePen(mypen);
-    angularAxis->setTickCount(9);
-    angularAxis->setLabelFormat("%d");
-
     QFont myfont;
     myfont.setPointSize(8);
+    myfont.setFamily("Microsoft Yahei");
+
     radialAxis->setRange(100,1300);
     radialAxis->setLabelsFont(myfont);
     radialAxis->setGridLinePen(mypen);
     radialAxis->setTickCount(7);
     radialAxis->setLabelFormat("%d");
+    radialAxis->setLabelsFont(myfont);
+
+    myfont.setPointSize(8);
+    angularAxis->setRange(0,360);
+    angularAxis->setGridLinePen(mypen);
+    angularAxis->setTickCount(9);
+    angularAxis->setLabelFormat("%d");
+    angularAxis->setLabelsFont(myfont);
+
 }
 
 void polarchart::updateData(const double *sp, const uint n)

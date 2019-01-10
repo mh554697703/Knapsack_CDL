@@ -6,13 +6,14 @@ barchart::barchart()
     axis = new QBarCategoryAxis();
     barseries = new QHorizontalStackedBarSeries();
     addSeries(barseries);
-    barchartFont.setPointSize(14);
+    barchartFont.setPointSize(10);
     barchartFont.setFamily("Microsoft Yahei");
 
     createDefaultAxes();
     setAxisY(axis,barseries);
     axisX(barseries)->setRange(-5,5);
     axisX(barseries)->setTitleFont(barchartFont);
+    axisX(barseries)->setLabelsFont(barchartFont);
 //    axisX(barseries)->setTitleText(QString::fromLocal8Bit("·çËÙ (m/s)"));
 }
 
@@ -36,6 +37,7 @@ void barchart::setAxis(const double *h, unsigned int n)
     removeAxis(axisY());
     setAxisY(axis,barseries);
     axisY()->setTitleFont(barchartFont);
+    axisY()->setLabelsFont(barchartFont);
 }
 
 void barchart::updateData(const double *sp, const unsigned int n)
@@ -58,9 +60,7 @@ void barchart::updateData(const double *sp, const unsigned int n)
         list.push_back(Velocity[i]);
     qSort(list.begin(), list.end());
     int Xmin=list.first();
-    qDebug()<<"Xmin = "<<Xmin;
     int Xmax=list.last();
-    qDebug()<<"Xmax = "<<Xmax;
     if(Xmin<=0)
     {
         if(Xmin<=-5)
