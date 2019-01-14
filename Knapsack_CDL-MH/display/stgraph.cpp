@@ -96,6 +96,15 @@ void STGraph::updateShow(const double *data_in)
     setAxisScale( QwtPlot::yRight, zInterval.minValue(), zInterval.maxValue() );
 
     replot();
-
 }
 
+void STGraph::setResampleMode(const int num)
+{
+    switch (num)
+    {
+    case 1 : stData->setResampleMode(QwtMatrixRasterData::BilinearInterpolation);
+        break;
+    case 2 : stData->setResampleMode(QwtMatrixRasterData::NearestNeighbour);
+        break;
+    }
+}

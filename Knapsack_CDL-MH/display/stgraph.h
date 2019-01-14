@@ -29,6 +29,7 @@ public:
 
     void initialShow(uint layernum, double minHeight, double heightStep);
     void updateShow(const double *s);
+    void setResampleMode(const int num);
 
 private:
     QwtPlotSpectrogram *d_spectrogram;         //QwtPlotSpectrogram ÆµÆ×Í¼Àà

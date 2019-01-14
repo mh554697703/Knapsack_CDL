@@ -16,6 +16,7 @@
 #include <QLayout>
 #include <QTextEdit>
 #include <QSizePolicy>
+#include <QActionGroup>
 
 QT_CHARTS_USE_NAMESPACE
 
@@ -40,12 +41,6 @@ MainWindow::MainWindow(QWidget *parent) :
     createStatusBar();                                    //创建状态栏
 
     //显示部分
-    connect(hVelocityAction,SIGNAL(triggered(bool)),this,SLOT(hVelocityActionTriggered(bool)));
-    connect(hAngleAction,SIGNAL(triggered(bool)),this,SLOT(hAngleActionTriggered(bool)));
-    connect(vVelocityAngleAction,SIGNAL(triggered(bool)),this,SLOT(vVelocityAngleActionTriggered(bool)));
-    connect(vVelocityAngleAction2,SIGNAL(triggered(bool)),this,SLOT(vVelocityAngleAction2Triggered(bool)));
-    connect(hDataAction,&QAction::triggered,this,&MainWindow::hDataActionTriggered);
-
     UpdateHeightsValue();
     stGraph_HSpeed->initialShow(14, minDetectRange, rangeResol);
     devicesControl = new DevicesControl();
@@ -116,7 +111,6 @@ void MainWindow::quitActionTriggered()
 
 void MainWindow::startActionTriggered()
 {  
-    qDebug()<<"dock1_Hight = "<<dock1->height();
     if (!isWorking) {
         compassbutton->setStyleSheet("background-color:rgb(0,255,100);");
         seedbutton->setStyleSheet("background-color:rgb(0,255,100);");
@@ -345,29 +339,29 @@ void MainWindow::createDockWindow()           //各个显示窗口
 {
     hSpeedChart = new LineChart;                                 //水平风速
     hSpeedChart->legend()->hide();
-    hSpeedChart->setMinimumSize(255,600);
+    hSpeedChart->setMinimumSize(250,600);
     QChartView *hSpeedChartView = new QChartView(hSpeedChart);
     hSpeedChartView->setRenderHint (QPainter::Antialiasing);       //对图像进行抗锯齿处理
 
     hAngleChart = new polarchart;                             //水平风向
     hAngleChart->legend()->hide();
-    hAngleChart->setMinimumSize(250,600);
+    hAngleChart->setMinimumSize(255,600);
     QChartView *hAngleChartView = new QChartView(hAngleChart);
 
     vSpeedBarChart = new barchart;                              //垂直风柱形图
     vSpeedBarChart->legend()->hide();
-    vSpeedBarChart->setMinimumSize(250,600);
+    vSpeedBarChart->setMinimumSize(275,600);
     vSpeedBarChart->setAutoFillBackground(true);
     vSpeedChartView = new QChartView(vSpeedBarChart);
 
     vSpeedLineChart = new LineChart;        //垂直风折线图
     vSpeedLineChart->legend()->hide();
-    vSpeedLineChart->setMinimumSize(250,600);
+    vSpeedLineChart->setMinimumSize(275,600);
     vSpeedLineChart->setAutoFillBackground(true);
     vSpeedChart2View = new QChartView(vSpeedLineChart);
 
     stGraph_HSpeed = new STGraph();                           //水平风场时空图
-    stGraph_HSpeed->setMinimumSize(250,590);
+    stGraph_HSpeed->setMinimumSize(245,590);
 
     //水平风速时空图窗口
     dock1 = new QDockWidget(tr("DockWindow 1"),this);
@@ -414,13 +408,17 @@ void MainWindow::createMenus()              //菜单栏
     setMenu->addAction(setAction);
     quitMenu = menuBar()->addMenu(QString::fromLocal8Bit("退出"));
     quitMenu->addAction(quitAction);
+
     showMenu = menuBar()->addMenu(QString::fromLocal8Bit("显示"));
     showMenu->setFont(myfont);
-    showMenu->addAction(hDataAction);
     showMenu->addAction(hVelocityAction);
     showMenu->addAction(hAngleAction);
-    vVelocityAngleMenu = showMenu->addMenu(QString::fromLocal8Bit("垂直风速/风向"));
 
+    hDataActionMenu = showMenu->addMenu(QString::fromLocal8Bit("水平风速时空图"));
+    hDataActionMenu->setFont(myfont);
+    hDataActionMenu->addAction(hDataAction1);
+    hDataActionMenu->addAction(hDataAction2);
+    vVelocityAngleMenu = showMenu->addMenu(QString::fromLocal8Bit("垂直风速/风向"));
     vVelocityAngleMenu->setFont(myfont);
     vVelocityAngleMenu->addAction(vVelocityAngleAction2);
     vVelocityAngleMenu->addAction(vVelocityAngleAction);
@@ -447,8 +445,9 @@ void MainWindow::createActions()          //菜单栏动作
     hVelocityAction = new QAction(QString::fromLocal8Bit("水平风速"));
     hAngleAction = new QAction(QString::fromLocal8Bit("水平风向"));
     vVelocityAngleAction = new QAction(QString::fromLocal8Bit("柱形图"));
-    hDataAction = new QAction(QString::fromLocal8Bit("水平风速时空分布"));
     vVelocityAngleAction2 = new QAction(QString::fromLocal8Bit("折线图"));
+    hDataAction1 = new QAction(QString::fromLocal8Bit("插值算法"));
+    hDataAction2 = new QAction(QString::fromLocal8Bit("近邻算法"));
 
     startAction->setFont(myfont);
     setAction->setFont(myfont);
@@ -458,7 +457,8 @@ void MainWindow::createActions()          //菜单栏动作
     hAngleAction->setFont(myfont);
     vVelocityAngleAction->setFont(myfont);
     vVelocityAngleAction2->setFont(myfont);
-    hDataAction->setFont(myfont);
+    hDataAction1->setFont(myfont);
+    hDataAction2->setFont(myfont);
 
     hVelocityAction->setCheckable(true);
     hVelocityAction->setChecked(true);
@@ -468,8 +468,18 @@ void MainWindow::createActions()          //菜单栏动作
     vVelocityAngleAction->setChecked(false);
     vVelocityAngleAction2->setCheckable(true);
     vVelocityAngleAction2->setChecked(true);
-    hDataAction->setCheckable(true);
-    hDataAction->setChecked(true);
+    hDataAction1->setCheckable(true);
+    hDataAction1->setChecked(true);
+    hDataAction2->setCheckable(true);
+    hDataAction2->setChecked(false);
+
+    connect(hVelocityAction,SIGNAL(triggered(bool)),this,SLOT(hVelocityActionTriggered(bool)));
+    connect(hAngleAction,SIGNAL(triggered(bool)),this,SLOT(hAngleActionTriggered(bool)));
+    connect(vVelocityAngleAction,SIGNAL(triggered(bool)),this,SLOT(vVelocityAngleActionTriggered(bool)));
+    connect(vVelocityAngleAction2,SIGNAL(triggered(bool)),this,SLOT(vVelocityAngleAction2Triggered(bool)));
+    connect(hDataAction1,SIGNAL(triggered(bool)),this,SLOT(hDataAction1Triggered(bool)));
+    connect(hDataAction2,SIGNAL(triggered(bool)),this,SLOT(hDataAction2Triggered(bool)));
+
     qDebug()<<"createActions";
 }
 
@@ -497,11 +507,21 @@ void MainWindow::vVelocityAngleAction2Triggered(const bool a)
     dock4->setWidget(vSpeedChart2View);
 }
 
-void MainWindow::hDataActionTriggered(const bool a)
+void MainWindow::hDataAction1Triggered(const bool a)
 {
-    dock1->setVisible(a);
+     hDataAction1->setChecked(a);
+     hDataAction2->setChecked(false);
+     dock1->setVisible(a);
+     stGraph_HSpeed->setResampleMode(1);
 }
 
+void MainWindow::hDataAction2Triggered(const bool a)
+{
+     hDataAction2->setChecked(a);
+     hDataAction1->setChecked(false);
+     dock1->setVisible(a);
+     stGraph_HSpeed->setResampleMode(2);
+}
 void MainWindow::MotorError(const QString &s)
 {
     motorbutton->setStyleSheet("background-color:rgb(255,0,100);");
@@ -533,12 +553,12 @@ void MainWindow::AdqError(const QString &s)
     statusBarText->setText(s);
 }
 
-void MainWindow::on_CompassButton_clicked()            //测试用
-{
-    qDebug()<<"window width ="<<this->width();
-    qDebug()<<"window heigh ="<<this->height();
-    qDebug()<<"button heigh ="<<compassbutton->height();
-}
+//void MainWindow::on_CompassButton_clicked()            //测试用
+//{
+//    qDebug()<<"window width ="<<this->width();
+//    qDebug()<<"window heigh ="<<this->height();
+//    qDebug()<<"button heigh ="<<compassbutton->height();
+//}
 
 void MainWindow::changeEvent(QEvent *event)           //窗口最大化时重新调整图表大小
 {

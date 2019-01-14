@@ -69,7 +69,8 @@ private slots:
     void hVelocityActionTriggered(const bool a);
     void hAngleActionTriggered(const bool a);
     void vVelocityAngleActionTriggered(const bool a);
-    void hDataActionTriggered(const bool a);
+    void hDataAction1Triggered(const bool a);
+    void hDataAction2Triggered(const bool a);
     void vVelocityAngleAction2Triggered(const bool a);
     // GUI界面相关
     void UpdateHeightsValue();
@@ -85,7 +86,7 @@ private slots:
     void LaserseedError(const QString &s);
     void LaserpulseError(const QString &s);
     void AdqError(const QString &s);
-    void on_CompassButton_clicked();
+//    void on_CompassButton_clicked();
     void changeEvent(QEvent *event);
 
 private:
@@ -117,9 +118,9 @@ private:
     barchart *vSpeedBarChart;
     QChartView *hSpeedChartView,*hAngleChartView,*vSpeedChartView,*vSpeedChart2View;
     QAction *startAction,*stopAction,*setAction,*quitAction,
-            *hVelocityAction,*hAngleAction,*vVelocityAngleAction,*vVelocityAngleAction2,*hDataAction;
+            *hVelocityAction,*hAngleAction,*vVelocityAngleAction,*hDataAction1,*hDataAction2,*vVelocityAngleAction2;
 
-    QMenu *startMenu,*setMenu,*quitMenu,*showMenu,*vVelocityAngleMenu;
+    QMenu *startMenu,*setMenu,*quitMenu,*showMenu,*hDataActionMenu,*vVelocityAngleMenu;
     UserToolBar *toolbar;
     QFont myfont;
     QLabel *statusBarText;
