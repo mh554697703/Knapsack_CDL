@@ -110,7 +110,7 @@ private:
     SettingFile *m_setfile;
 
     QTimer *TestTimer;
-    QDockWidget *dock1,*dock2,*dock3,*dock4,*dock5; //分别为时空图窗口，水平风速窗口，水平风向窗口，垂直风柱形图窗口。垂直风折线图窗口
+    QDockWidget *dock1,*dock2,*dock3,*dock4; //分别为时空图窗口，水平风速窗口，水平风向窗口，垂直风窗口
     QPushButton *compassbutton,*adqbutton,*motorbutton,*seedbutton,*pulsebutton;
     LineChart *hSpeedChart,*vSpeedLineChart;
     polarchart *hAngleChart;

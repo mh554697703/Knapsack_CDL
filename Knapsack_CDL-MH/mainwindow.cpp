@@ -81,14 +81,14 @@ MainWindow::MainWindow(QWidget *parent) :
     // 构造定时器，设置超时为 1 秒
     TestTimer = new QTimer(this);
     connect(TestTimer, SIGNAL(timeout()), this, SLOT(changeData()));
-//    TestTimer->start(1000);
-    connect(compassbutton,&QPushButton::clicked ,this,&MainWindow::on_CompassButton_clicked);
+    //    TestTimer->start(1000);
+//    connect(compassbutton,&QPushButton::clicked ,this,&MainWindow::on_CompassButton_clicked);
 }
 
 MainWindow::~MainWindow()
 {
     if(TestTimer->isActive())
-    TestTimer->stop();
+        TestTimer->stop();
     delete TestTimer;
     delete ui;
     delete m_setfile;
@@ -262,8 +262,8 @@ void MainWindow::changeData()       //测试用
     vSpeedBarChart->updateData(V_speed,14);
     vSpeedLineChart->updateData(V_speed,14);
     stGraph_HSpeed->updateShow(H_speed);
-//    statusBarText->setText(QString::fromLocal8Bit(" 模拟测试中..."));
-//    stGraph_VSpeed->updateShow(V_speed);
+    //    statusBarText->setText(QString::fromLocal8Bit(" 模拟测试中..."));
+    //    stGraph_VSpeed->updateShow(V_speed);
 }
 
 void MainWindow::createStatusBar()              //状态栏
@@ -278,35 +278,35 @@ void MainWindow::createStatusBar()              //状态栏
 
     compassbutton = new QPushButton();
     compassbutton->setObjectName("CompassButton");
-//    compassbutton->setStyleSheet("background-color:rgb(0,255,100);");
+    //    compassbutton->setStyleSheet("background-color:rgb(0,255,100);");
     compassbutton->setText(QString::fromLocal8Bit("罗盘"));
     compassbutton->setFont(myfont);
     compassbutton->setFixedSize(70,30);
     hlayout->addWidget(compassbutton);
 
     adqbutton = new QPushButton(this);
-//    adqbutton->setStyleSheet("background-color:rgb(0,255,100);");
+    //    adqbutton->setStyleSheet("background-color:rgb(0,255,100);");
     adqbutton->setText(QString::fromLocal8Bit("采集卡"));
     adqbutton->setFont(myfont);
     adqbutton->setFixedSize(70,30);
     hlayout->addWidget(adqbutton);
 
     motorbutton = new QPushButton(this);
-//    motorbutton->setStyleSheet("background-color:rgb(0,255,100);");
+    //    motorbutton->setStyleSheet("background-color:rgb(0,255,100);");
     motorbutton->setText(QString::fromLocal8Bit("电机"));
     motorbutton->setFont(myfont);
     motorbutton->setFixedSize(70,30);
     hlayout->addWidget(motorbutton);
 
     seedbutton = new QPushButton(this);
-//    seedbutton->setStyleSheet("background-color:rgb(0,255,100);");
+    //    seedbutton->setStyleSheet("background-color:rgb(0,255,100);");
     seedbutton->setText(QString::fromLocal8Bit("种子源"));
     seedbutton->setFont(myfont);
     seedbutton->setFixedSize(70,30);
     hlayout->addWidget(seedbutton);
 
     pulsebutton = new QPushButton(this);
-//    pulsebutton->setStyleSheet("background-color:rgb(0,255,100);");
+    //    pulsebutton->setStyleSheet("background-color:rgb(0,255,100);");
     pulsebutton->setText(QString::fromLocal8Bit("放大器"));
     pulsebutton->setFont(myfont);
     pulsebutton->setFixedSize(70,30);
@@ -316,30 +316,36 @@ void MainWindow::createStatusBar()              //状态栏
     QWidget *StatusWidget = new QWidget;
     StatusWidget->setLayout(hlayout);
 
+    ui->statusBar->setFixedHeight(45);
+    ui->statusBar->addWidget(StatusWidget);
+    ui->statusBar->setStyleSheet(QString("QStatusBar::item{border: 0px}"));    //隐藏状态栏边框
+
     statusBarText = new QLabel(QString::fromLocal8Bit(" 未进行探测"));
     statusBarText->setFont(myfont);
     statusBarText->setStyleSheet("background-color:rgb(0,255,100);");
     statusBarText->setFixedSize(350,30);
 
-    ui->statusBar->setFixedHeight(45);
-    ui->statusBar->addWidget(StatusWidget);
-    ui->statusBar->setStyleSheet(QString("QStatusBar::item{border: 0px}"));    //隐藏状态栏边框
     QLabel *label2 = new QLabel;
     label2->setFont(myfont);
     label2->setFixedHeight(30);
     label2->setText(QString::fromLocal8Bit(" 工作状态: "));
     label2->setStyleSheet("background-color:rgb(0,250,250);");
-    ui->statusBar->addPermanentWidget(label2);
-    ui->statusBar->addPermanentWidget(statusBarText);
 
+    hlayout = new QHBoxLayout;
+    hlayout->addWidget(label2);
+    hlayout->addWidget(statusBarText);
+    StatusWidget = new QWidget;
+    StatusWidget->setLayout(hlayout);
 
+    ui->statusBar->addPermanentWidget(StatusWidget);
+  ui->statusBar->setSizeGripEnabled(false);
 }
 
 void MainWindow::createDockWindow()           //各个显示窗口
 {
     hSpeedChart = new LineChart;                                 //水平风速
     hSpeedChart->legend()->hide();
-    hSpeedChart->setMinimumWidth(250);
+    hSpeedChart->setMinimumSize(255,600);
     QChartView *hSpeedChartView = new QChartView(hSpeedChart);
     hSpeedChartView->setRenderHint (QPainter::Antialiasing);       //对图像进行抗锯齿处理
 
@@ -361,7 +367,7 @@ void MainWindow::createDockWindow()           //各个显示窗口
     vSpeedChart2View = new QChartView(vSpeedLineChart);
 
     stGraph_HSpeed = new STGraph();                           //水平风场时空图
-    stGraph_HSpeed->setMinimumSize(250,600);
+    stGraph_HSpeed->setMinimumSize(250,590);
 
     //水平风速时空图窗口
     dock1 = new QDockWidget(tr("DockWindow 1"),this);
@@ -377,7 +383,7 @@ void MainWindow::createDockWindow()           //各个显示窗口
     dock2->setWidget(hSpeedChartView);
     addDockWidget(Qt::TopDockWidgetArea,dock2);
 
-    dock3 = new QDockWidget(QString::fromLocal8Bit("水平风向(m/s)"),this);
+    dock3 = new QDockWidget(QString::fromLocal8Bit("水平风向"),this);
     dock3->setFeatures(QDockWidget::NoDockWidgetFeatures);
     dock3->setWidget(hAngleChartView);
     addDockWidget(Qt::TopDockWidgetArea,dock3);
@@ -386,15 +392,15 @@ void MainWindow::createDockWindow()           //各个显示窗口
     dock4 = new QDockWidget(QString::fromLocal8Bit("垂直风速(m/s)与风向"),this);
     dock4->setFeatures(QDockWidget::NoDockWidgetFeatures);
     dock4->setAllowedAreas(Qt::TopDockWidgetArea|Qt::RightDockWidgetArea);
-    dock4->setWidget(vSpeedChartView);
-    dock4->setVisible(false);
+    dock4->setWidget(vSpeedChart2View);
     addDockWidget(Qt::TopDockWidgetArea,dock4);
 
-    dock5 = new QDockWidget(QString::fromLocal8Bit("垂直风速(m/s)与风向"),this);
-    dock5->setFeatures(QDockWidget::NoDockWidgetFeatures);
-    dock5->setAllowedAreas(Qt::TopDockWidgetArea|Qt::RightDockWidgetArea);
-    dock5->setWidget(vSpeedChart2View);
-    addDockWidget(Qt::TopDockWidgetArea,dock5);
+    //    dock5 = new QDockWidget(QString::fromLocal8Bit("垂直风速(m/s)与风向"),this);
+    //    dock5->setFeatures(QDockWidget::NoDockWidgetFeatures);
+    //    dock5->setAllowedAreas(Qt::TopDockWidgetArea|Qt::RightDockWidgetArea);
+    //    dock5->setWidget(vSpeedChart2View);
+    //    dock5->setVisible(false);
+    //    addDockWidget(Qt::TopDockWidgetArea,dock5);
     qDebug()<<"createDockWindow";
 }
 
@@ -429,7 +435,7 @@ void MainWindow::createToolBars()           //工具栏
     connect(toolbar->quitAction, &QAction::triggered, this, &MainWindow::quitActionTriggered);
     connect(toolbar->setAction,&QAction::triggered,this, &MainWindow::setActionTriggered);
     connect(toolbar->startAction,&QAction::triggered,this, &MainWindow::startActionTriggered);
-//    connect(toolbar->stopAction,&QAction::triggered,this, &MainWindow::stopActionTriggered);
+    //    connect(toolbar->stopAction,&QAction::triggered,this, &MainWindow::stopActionTriggered);
     toolbar->setVisible(true);
 }
 void MainWindow::createActions()          //菜单栏动作
@@ -479,23 +485,16 @@ void MainWindow::hAngleActionTriggered(const bool a)
 void MainWindow::vVelocityAngleActionTriggered(const bool a)
 {
     vVelocityAngleAction->setChecked(a);
+    vVelocityAngleAction2->setChecked(false);
     dock4->setVisible(a);
-    if(dock5->isVisible())
-    {
-        vVelocityAngleAction2->setChecked(false);
-        dock5->setVisible(false);
-    }
+    dock4->setWidget(vSpeedChartView);
 }
-
 void MainWindow::vVelocityAngleAction2Triggered(const bool a)
 {
     vVelocityAngleAction2->setChecked(a);
-    dock5->setVisible(a);
-    if(dock4->isVisible())
-    {
-        vVelocityAngleAction->setChecked(false);
-        dock4->setVisible(false);
-    }
+    vVelocityAngleAction->setChecked(false);
+    dock4->setVisible(a);
+    dock4->setWidget(vSpeedChart2View);
 }
 
 void MainWindow::hDataActionTriggered(const bool a)
@@ -544,16 +543,20 @@ void MainWindow::on_CompassButton_clicked()            //测试用
 void MainWindow::changeEvent(QEvent *event)           //窗口最大化时重新调整图表大小
 {
     if(event->type()!=QEvent::WindowStateChange) return;
-       if(this->windowState()==Qt::WindowMaximized)
-       {
-           dock3->setMinimumHeight(height()-150);
-       }
+    if(this->windowState()==Qt::WindowMaximized)
+    {
+        dock1->setMinimumHeight(height()-149);
+        dock2->setMinimumHeight(height()-149);
+        dock3->setMinimumHeight(height()-149);
+        dock4->setMinimumHeight(height()-149);
+    }
 }
 
 void MainWindow::resizeEvent(QResizeEvent * event)    //窗口尺寸变换时重新调整图表大小
 {
-//    QMainWindow::resizeEvent(event);
-//    hSpeedChart->setMinimumHeight(height()-168);
-    dock3->setMinimumHeight(height()-150);
-//    emit size_changed();
+    dock1->setMinimumHeight(height()-149);
+    dock2->setMinimumHeight(height()-149);
+    dock3->setMinimumHeight(height()-149);
+    dock4->setMinimumHeight(height()-149);
+    //    emit size_changed();
 }
