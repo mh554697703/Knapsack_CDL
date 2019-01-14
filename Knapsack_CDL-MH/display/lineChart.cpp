@@ -42,7 +42,7 @@ void LineChart::setChart()
     mypen.setWidthF(0.5);
     linechartFont.setFamily("Microsoft Yahei");
     linechartFont.setPointSize(10);
-
+    linechartFont.setBold(true);
 
     m_axisX->setRange(0,20);
     m_axisX->setLabelFormat("%i");

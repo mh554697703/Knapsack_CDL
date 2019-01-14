@@ -8,6 +8,7 @@ barchart::barchart()
     addSeries(barseries);
     barchartFont.setPointSize(10);
     barchartFont.setFamily("Microsoft Yahei");
+    barchartFont.setBold(true);
 
     createDefaultAxes();
     setAxisY(axis,barseries);

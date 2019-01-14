@@ -40,6 +40,7 @@ void polarchart::setAxis()
     QFont myfont;
     myfont.setPointSize(8);
     myfont.setFamily("Microsoft Yahei");
+    myfont.setBold(true);
 
     radialAxis->setRange(100,1300);
     radialAxis->setLabelsFont(myfont);
@@ -48,7 +49,7 @@ void polarchart::setAxis()
     radialAxis->setLabelFormat("%d");
     radialAxis->setLabelsFont(myfont);
 
-    myfont.setPointSize(8);
+    myfont.setPointSize(10);
     angularAxis->setRange(0,360);
     angularAxis->setGridLinePen(mypen);
     angularAxis->setTickCount(9);

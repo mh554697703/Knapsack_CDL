@@ -28,7 +28,7 @@ STGraph::STGraph( QWidget *parent ):
     //    ColorMap *myColorMap = new ColorMap();
     d_spectrogram->setColorMap( new ColorMap());
 
-    QFont font("Microsoft Yahei",12);
+    QFont font("Microsoft Yahei",10);
     font.setBold(true);
     setAxisFont(QwtPlot::yLeft,font);
     setAxisFont(QwtPlot::xBottom,font);
@@ -65,7 +65,7 @@ void STGraph::initialShow(uint nLayers, double minHeight, double heightStep)
 //    setAxisScale( QwtPlot::yLeft, minHeight, minHeight + (nLayers-1)*heightStep, heightStep );
 
     //    static_cast<STData *>( d_spectrogram->data() )->setResampleMode( static_cast<QwtMatrixRasterData::ResampleMode>( 0 ));
-    stData->setResampleMode(QwtMatrixRasterData::NearestNeighbour);
+    stData->setResampleMode(QwtMatrixRasterData::BilinearInterpolation);
 
     d_spectrogram->setDisplayMode(QwtPlotSpectrogram::ContourMode, false);       //设置显示模式
     d_spectrogram->setDisplayMode(QwtPlotSpectrogram::ImageMode, true);
@@ -78,7 +78,7 @@ void STGraph::initialShow(uint nLayers, double minHeight, double heightStep)
     rightAxis->setColorBarEnabled( true );
     rightAxis->setColorBarWidth( 20 );
     rightAxis->setColorMap( zInterval, new ColorMap());
-    QFont font("Microsoft Yahei",12);
+    QFont font("Microsoft Yahei",10);
     font.setBold(true);
     rightAxis->setFont(font);
     setAxisScale( QwtPlot::yRight, zInterval.minValue(), zInterval.maxValue() );

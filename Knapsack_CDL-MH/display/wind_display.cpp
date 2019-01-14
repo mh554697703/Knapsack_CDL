@@ -29,7 +29,7 @@ wind_display::wind_display(QWidget *parent) : QWidget(parent)
 
     setLayout(Vlayout);    //整体布局
     HSpeedScale = 1;
-    setMinimumSize(240, 640);
+    setMinimumSize(240, 600);
 }
 
 wind_display::~wind_display()
