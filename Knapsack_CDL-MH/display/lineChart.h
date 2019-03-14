@@ -23,8 +23,7 @@ public:
     void setChart();
     void updateData(const double *sp, const uint n);
     void setHeight(const double *h, unsigned int n);
-private slots:
-
+    void changeAxisY(const int nRangeBin);
 
 private:
     QLineSeries *m_series;

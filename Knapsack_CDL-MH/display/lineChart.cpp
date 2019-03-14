@@ -129,7 +129,11 @@ void LineChart::setHeight(const double *h, unsigned int n)
     for(unsigned int i=0;i<n;i++)
     {
         Y[i] = h[i];
-
-        qDebug()<<"lineChart Y"<<i <<"= "<<Y[i];
     }
+}
+
+void LineChart::changeAxisY(const int nRangeBin)
+{
+    m_axisY->setRange(100,nRangeBin*100);
+    m_axisY->setTickCount(nRangeBin);
 }

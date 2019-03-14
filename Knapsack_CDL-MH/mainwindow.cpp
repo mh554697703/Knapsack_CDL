@@ -92,6 +92,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::setActionTriggered()
 {
+    qDebug()<<"setaction";
     ParameterSetDialog *parameterSetDialog = new ParameterSetDialog(this);
     parameterSetDialog->setParaSettings(mysetting, isWorking);
     if (parameterSetDialog->exec() == QDialog::Accepted) {
@@ -99,6 +100,8 @@ void MainWindow::setActionTriggered()
         UpdateHeightsValue();       //刷新显示
         UpdateHeightsValue();       //刷新显示
         stGraph_HSpeed->initialShow(mysetting.nRangeBin, minDetectRange, rangeResol);
+        hSpeedChart->changeAxisY(mysetting.nRangeBin);
+        vSpeedLineChart->changeAxisY(mysetting.nRangeBin);
     }
     delete parameterSetDialog;
 }
@@ -130,7 +133,8 @@ void MainWindow::startActionTriggered()
 
 void MainWindow::stopActionTriggered()
 {
-    TestTimer->stop();
+    if(TestTimer->isActive())
+        TestTimer->stop();
     toolbar->set_to_stopped();
     if (isWorking) {
         isWorking = false;
